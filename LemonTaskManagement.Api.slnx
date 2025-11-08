@@ -1,0 +1,12 @@
+<Solution>
+  <Folder Name="/01 - Solution Items/">
+    <File Path="Directory.Build.props" />
+    <File Path="Directory.Build.targets" />
+    <File Path="Directory.Packages.props" />
+  </Folder>
+  <Project Path="LemonTaskManagement.Api/LemonTaskManagement.Api.csproj" />
+  <Project Path="LemonTaskManagement.Domain.Entities/LemonTaskManagement.Domain.Entities.csproj" />
+  <Project Path="LemonTaskManagement.Infra.Data.Read/LemonTaskManagement.Infra.Data.Read.csproj" />
+  <Project Path="LemonTaskManagement.Infra.Data.Write/LemonTaskManagement.Infra.Data.Write.csproj" />
+  <Project Path="LemonTaskManagement.Infra.Data/LemonTaskManagement.Infra.Data.csproj" />
+</Solution>

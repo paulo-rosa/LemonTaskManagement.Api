@@ -1,0 +1,12 @@
+<Project>
+    <PropertyGroup>
+        <TargetFramework>net9.0</TargetFramework>
+        <LangVersion>latest</LangVersion>
+        <RepositoryUrl></RepositoryUrl>
+        <Company>Paulo Douglas</Company>
+        <Authors>Paulo Douglas</Authors>
+        <Copyright>Paulo Douglas</Copyright>
+        <Product>Lemon Task Management API</Product>
+        <CentralPackageVersionsManagementEnabled>true</CentralPackageVersionsManagementEnabled>
+    </PropertyGroup>
+</Project>

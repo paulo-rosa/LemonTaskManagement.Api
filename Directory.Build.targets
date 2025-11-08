@@ -1,0 +1,7 @@
+<Project>
+  <PropertyGroup>
+    <!-- Suppress CRR0029 globally for all projects -->
+    <!-- Justification: Web API context - ConfigureAwait(false) not required as ASP.NET Core doesn't use SynchronizationContext -->
+  <NoWarn>$(NoWarn);CRR0029</NoWarn>
+  </PropertyGroup>
+</Project>
