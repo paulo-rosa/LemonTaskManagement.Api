@@ -1,11 +1,10 @@
 ﻿using System;
 
-namespace LemonTaskManagement.Domain.Entities
+namespace LemonTaskManagement.Domain.Entities;
+
+public class Board : EntityBase
 {
-    public class Board : DomainBase
-    {
-        public Guid Id { get; set; }
-        public string Name { get; set; }
-        public string Description { get; set; }
-    }
+    public Guid Id { get; set; }
+    public string Name { get; set; }
+    public string Description { get; set; }
 }

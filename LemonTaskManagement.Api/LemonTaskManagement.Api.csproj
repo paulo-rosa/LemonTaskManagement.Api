@@ -6,15 +6,24 @@
 	<ImplicitUsings>enable</ImplicitUsings>
 	<UserSecretsId>f5d5324c-24ae-4c30-b0ec-5a2b527dc186</UserSecretsId>
 	<DockerDefaultTargetOS>Linux</DockerDefaultTargetOS>
+	<DockerComposeProjectPath>..\docker-compose.dcproj</DockerComposeProjectPath>
   </PropertyGroup>
 
   <ItemGroup>
-	<PackageReference Include="Microsoft.AspNetCore.OpenApi"/>
-	<PackageReference Include="Microsoft.VisualStudio.Azure.Containers.Tools.Targets"/>
+	<PackageReference Include="Microsoft.AspNetCore.OpenApi" />
+	<PackageReference Include="Microsoft.EntityFrameworkCore" />
+	<PackageReference Include="Microsoft.EntityFrameworkCore.Design" />
+	<PackageReference Include="Microsoft.EntityFrameworkCore.InMemory" />
+	<PackageReference Include="Microsoft.EntityFrameworkCore.Tools" />
+	<PackageReference Include="Microsoft.VisualStudio.Azure.Containers.Tools.Targets" />
+	<PackageReference Include="Newtonsoft.Json" />
+	<PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" />
   </ItemGroup>
 
   <ItemGroup>
-	<Folder Include="Controllers\" />
+	<ProjectReference Include="..\LemonTaskManagement.Domain.Queries\LemonTaskManagement.Domain.Queries.csproj" />
+	<ProjectReference Include="..\LemonTaskManagement.Infra.Data.Read\LemonTaskManagement.Infra.Data.Read.csproj" />
+	<ProjectReference Include="..\LemonTaskManagement.Infra.Data.Write\LemonTaskManagement.Infra.Data.Write.csproj" />
   </ItemGroup>
 
 </Project>

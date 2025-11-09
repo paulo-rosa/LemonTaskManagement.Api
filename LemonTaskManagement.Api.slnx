@@ -3,9 +3,15 @@
     <File Path="Directory.Build.props" />
     <File Path="Directory.Build.targets" />
     <File Path="Directory.Packages.props" />
+    <Project Path="docker-compose.dcproj">
+      <Build />
+    </Project>
   </Folder>
   <Project Path="LemonTaskManagement.Api/LemonTaskManagement.Api.csproj" />
+  <Project Path="LemonTaskManagement.Domain.Commands/LemonTaskManagement.Domain.Commands.csproj" />
+  <Project Path="LemonTaskManagement.Domain.Core/LemonTaskManagement.Domain.Core.csproj" />
   <Project Path="LemonTaskManagement.Domain.Entities/LemonTaskManagement.Domain.Entities.csproj" />
+  <Project Path="LemonTaskManagement.Domain.Queries/LemonTaskManagement.Domain.Queries.csproj" />
   <Project Path="LemonTaskManagement.Infra.Data.Read/LemonTaskManagement.Infra.Data.Read.csproj" />
   <Project Path="LemonTaskManagement.Infra.Data.Write/LemonTaskManagement.Infra.Data.Write.csproj" />
   <Project Path="LemonTaskManagement.Infra.Data/LemonTaskManagement.Infra.Data.csproj" />

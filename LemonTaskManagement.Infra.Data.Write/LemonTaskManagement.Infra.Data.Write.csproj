@@ -5,4 +5,16 @@
 	<IsPackable>false</IsPackable>
   </PropertyGroup>
 
+  <ItemGroup>
+	<Folder Include="Migrations\" />
+  </ItemGroup>
+
+  <ItemGroup>
+	<PackageReference Include="Microsoft.EntityFrameworkCore" />
+  </ItemGroup>
+  
+  <ItemGroup>
+	<ProjectReference Include="..\LemonTaskManagement.Infra.Data\LemonTaskManagement.Infra.Data.csproj" />
+  </ItemGroup>
+  
 </Project>

@@ -5,8 +5,4 @@
     <Nullable>enable</Nullable>
   </PropertyGroup>
 
-  <ItemGroup>
-    <ProjectReference Include="..\LemonTaskManagement.Domain.Core\LemonTaskManagement.Domain.Core.csproj" />
-  </ItemGroup>
-
 </Project>
