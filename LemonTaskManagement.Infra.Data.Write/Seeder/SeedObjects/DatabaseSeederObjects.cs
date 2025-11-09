@@ -197,5 +197,82 @@ public static class DatabaseSeederObjects
         };
         return boardUsers;
     }
+
+    private static readonly Guid[][] boardColumnIds = {
+        [
+            new("68d035b7-fa02-4213-9f31-64567035571a"),
+            new("72b28290-9841-45f9-917d-c81c7349f46e"),
+            new("76b126d9-a102-4080-af13-5ef926cbd772")
+        ],
+        [
+            new("a8338f5e-69af-4869-89ce-c2005f709362"),
+            new("ce515d30-76bc-45f7-8292-435368e2fc19"),
+            new("2b598d88-5afd-4f27-a538-956abf35b115"),
+        ],
+        [
+            new("fd3de6ba-ff1e-4fe9-bb2b-4acb5186e38d"),
+            new("0188a65a-06cc-43e6-8c13-ee93aa586348"),
+            new("06a72d5e-6319-4795-b036-2739acf5051e")
+        ],
+        [
+            new("a891bed6-9dba-42ec-a811-646eec934753"),
+            new("e0ee4e9e-9097-422f-801b-c77fd3211151"),
+            new("fbe50e15-f74b-4735-94b1-15bc3f83c05b")
+        ]
+    };
+
+    public static List<BoardColumn> GetBoardColumns()
+    {
+        var boards = GetBoards();
+        var boardColumns = new List<BoardColumn>();
+
+        var counter = 0;
+
+        // Create default columns (TO-DO, DOING, DONE) for each board
+        foreach (var board in boards)
+        {
+            var currentBoardIdArray = boardColumnIds[counter];
+
+            boardColumns.Add(new BoardColumn
+            {
+                Id = currentBoardIdArray[0],
+                BoardId = board.Id,
+                Name = "TO-DO",
+                Order = 1,
+                CreatedAt = CreatedDate,
+                CreatedBy = CreatedBy,
+                UpdatedAt = CreatedDate,
+                UpdatedBy = CreatedBy
+            });
+
+            boardColumns.Add(new BoardColumn
+            {
+                Id = currentBoardIdArray[1],
+                BoardId = board.Id,
+                Name = "DOING",
+                Order = 2,
+                CreatedAt = CreatedDate,
+                CreatedBy = CreatedBy,
+                UpdatedAt = CreatedDate,
+                UpdatedBy = CreatedBy
+            });
+
+            boardColumns.Add(new BoardColumn
+            {
+                Id = currentBoardIdArray[2],
+                BoardId = board.Id,
+                Name = "DONE",
+                Order = 3,
+                CreatedAt = CreatedDate,
+                CreatedBy = CreatedBy,
+                UpdatedAt = CreatedDate,
+                UpdatedBy = CreatedBy
+            });
+
+            counter++;
+        }
+
+        return boardColumns;
+    }
 }
 

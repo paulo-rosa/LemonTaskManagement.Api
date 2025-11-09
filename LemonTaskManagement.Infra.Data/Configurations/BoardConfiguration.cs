@@ -16,5 +16,15 @@ public class BoardConfiguration : IEntityTypeConfiguration<Board>
 
         builder.Property(e => e.Description)
             .HasMaxLength(1000);
+        
+        builder.HasMany(e => e.Columns)
+            .WithOne(e => e.Board)
+            .HasForeignKey(e => e.BoardId)
+            .OnDelete(DeleteBehavior.Cascade);
+        
+        builder.HasMany(e => e.BoardUsers)
+            .WithOne(e => e.Board)
+            .HasForeignKey(e => e.BoardId)
+            .OnDelete(DeleteBehavior.Cascade);
     }
 }

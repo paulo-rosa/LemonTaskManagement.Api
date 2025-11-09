@@ -11,5 +11,6 @@ public static class ModelBuilderExtensions
         modelBuilder.Entity<User>().HasData(DatabaseSeederObjects.GetUsers());
         modelBuilder.Entity<Board>().HasData(DatabaseSeederObjects.GetBoards());
         modelBuilder.Entity<BoardUser>().HasData(DatabaseSeederObjects.GetBoardUsers());
+        modelBuilder.Entity<BoardColumn>().HasData(DatabaseSeederObjects.GetBoardColumns());
     }
 }

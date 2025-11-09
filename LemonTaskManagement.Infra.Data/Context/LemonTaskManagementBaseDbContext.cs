@@ -8,6 +8,8 @@ public class LemonTaskManagementBaseDbContext(DbContextOptions options) : DbCont
     public DbSet<User> Users { get; set; }
     public DbSet<Board> Boards { get; set; }
     public DbSet<BoardUser> BoardUsers { get; set; }
+    public DbSet<BoardColumn> BoardColumns { get; set; }
+    public DbSet<Card> Cards { get; set; }
 
     protected string GetCreatedBy()
     {
