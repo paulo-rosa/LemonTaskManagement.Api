@@ -1,0 +1,33 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+	<TargetFramework>netstandard2.1</TargetFramework>
+	<AssemblyName>LemonTaskManagement.SDK</AssemblyName>
+	<PackageId>LemonTaskManagement.SDK</PackageId>
+	<PackageDescription>Lemon Task Management SDK</PackageDescription>
+  </PropertyGroup>
+
+  <Target Name="GenerateApiSdk" AfterTargets="Build" Condition="'$(GITHUB_ACTIONS)' != 'true' AND '$(AWS_EXECUTION_ENV)' == ''">
+	<Exec Command="dotnet tool restore" WorkingDirectory="$(MSBuildProjectDirectory)" />
+	<Exec Command="dotnet tool run nswag run nswag.json" WorkingDirectory="$(MSBuildProjectDirectory)" />
+  </Target>
+
+  <ItemGroup>
+	<PackageReference Include="Newtonsoft.Json" />
+	<PackageReference Include="System.ComponentModel.Annotations" />
+  </ItemGroup>
+
+  <ItemGroup>
+	<Content Update="nswag.json">
+	  <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
+	  <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+	</Content>
+	<Content Include=".config\dotnet-tools.json" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include=".config\" />
+  </ItemGroup>
+
+</Project>

@@ -14,11 +14,19 @@ public class Program
         builder.Services.AddControllers();
         builder.Services.AddOpenApi();
 
+        builder.Services.AddOpenApiDocument(options =>
+        {
+            options.Title = "LemonTaskManagement API";
+            options.Description = "API for LemonTaskManagement services";
+            options.Version = "1.0.0";
+        });
+
         var app = builder.Build();
 
         if (app.Environment.IsDevelopment())
         {
             app.MapOpenApi();
+            app.UseOpenApi();
         }
 
         app.UseHttpsRedirection();
