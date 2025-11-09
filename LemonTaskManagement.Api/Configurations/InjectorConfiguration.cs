@@ -19,7 +19,9 @@ internal static class InjectorConfiguration
 
     private static void InjectorConfigurationQueries(this IServiceCollection services, IConfiguration configuration, IWebHostEnvironment environment)
     {
-        services.AddScoped<IUsersQueryService, UsersQueryService>();
         services.AddScoped<IUsersQueryRepository, UsersQueryRepository>();
+        services.AddScoped<IUsersQueryService, UsersQueryService>();
+        services.AddScoped<IUserBoardsQueryRepository, UserBoardsQueryRepository>();
+        services.AddScoped<IUserBoardsQueryService, UserBoardsQueryService>();
     }
 }

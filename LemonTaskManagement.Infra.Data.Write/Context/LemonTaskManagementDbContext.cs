@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace LemonTaskManagement.Infra.Data.Context;
 
-public class LemonTaskManagementDbContext(DbContextOptions options) : LemonTaskManagementBaseDbContext(options)
+public class LemonTaskManagementDbContext(DbContextOptions<LemonTaskManagementDbContext> options) : LemonTaskManagementBaseDbContext(options)
 {
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {

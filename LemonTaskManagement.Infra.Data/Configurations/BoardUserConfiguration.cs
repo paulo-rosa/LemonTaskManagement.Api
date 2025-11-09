@@ -10,12 +10,12 @@ public class BoardUserConfiguration : IEntityTypeConfiguration<BoardUser>
     {
         builder.HasKey(e => new { e.UserId, e.BoardId });
 
-        builder.HasOne<User>()
+        builder.HasOne(e => e.User)
             .WithMany()
             .HasForeignKey(e => e.UserId)
             .OnDelete(DeleteBehavior.Cascade);
 
-        builder.HasOne<Board>()
+        builder.HasOne(e => e.Board)
             .WithMany()
             .HasForeignKey(e => e.BoardId)
             .OnDelete(DeleteBehavior.Cascade);

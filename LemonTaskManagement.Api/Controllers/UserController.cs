@@ -5,15 +5,20 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace LemonTaskManagement.Api.Controllers;
 
-[Route("api/users")]
+[Route("api/users/{userId:Guid}")]
 [ApiController]
-public class UserController(IUsersQueryService userQueryService) : ControllerBase
+public class UserBoardController(IUserBoardsQueryService userBoardsQueryService) : ControllerBase
 {
-    [HttpGet("{id:Guid}")]
-    [ProducesResponseType(200, Type = typeof(ApiResponse<GetUserResponse>))]
-    public async Task<IActionResult> GetUserAsync(Guid id) => Ok(await userQueryService.GetUserAsync(new GetUserQuery(id)));
 
-    [HttpGet("")]
+    [HttpGet("boards")]
     [ProducesResponseType(200, Type = typeof(ApiResponse<GetUsersResponse>))]
-    public async Task<IActionResult> GetUsersAsync([FromQuery] GetUsersQuery query) => Ok(await userQueryService.GetUsersAsync(query));
+    public async Task<IActionResult> GetUserBoardsAsync([FromRoute] Guid userId, [FromQuery] GetUserBoardsQuery query)
+    {
+        query.UserId = userId;
+        return Ok(await userBoardsQueryService.GetUserBoardsAsync(query));
+    }
+
+    [HttpGet("boards/{boardId:Guid}")]
+    [ProducesResponseType(200, Type = typeof(ApiResponse<GetUserResponse>))]
+    public async Task<IActionResult> GetUserBoardAsync(Guid userId, Guid boardId) => Ok(await userBoardsQueryService.GetUserBoardAsync(new GetUserBoardQuery(userId, boardId)));
 }
