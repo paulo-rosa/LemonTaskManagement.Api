@@ -18,6 +18,9 @@ public class UserBoardsQueryRepository(LemonTaskManagementReadOnlyDbContext cont
             .Where(u => u.UserId == query.UserId)
             .Include(u => u.User)
             .Include(u => u.Board)
+            .ThenInclude(b => b.Columns)
+            .ThenInclude(b => b.Cards)
+            .ThenInclude(b => b.AssignedUser)
             .Skip(query.Skip)
             .Take(query.Take)
             .ToListAsync();
@@ -27,5 +30,8 @@ public class UserBoardsQueryRepository(LemonTaskManagementReadOnlyDbContext cont
             .AsNoTracking()
             .Include(u => u.User)
             .Include(u => u.Board)
+            .ThenInclude(b => b.Columns)
+            .ThenInclude(b => b.Cards)
+            .ThenInclude(b => b.AssignedUser)
             .FirstOrDefaultAsync(u => u.BoardId == query.BoardId && u.UserId == query.UserId);
 }

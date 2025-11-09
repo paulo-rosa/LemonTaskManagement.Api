@@ -7,7 +7,7 @@ namespace LemonTaskManagement.Api.Controllers;
 
 [Route("api/users")]
 [ApiController]
-public class UserController(IUsersQueryService userQueryService) : ControllerBase
+public class UsersController(IUsersQueryService userQueryService) : ControllerBase
 {
     [HttpGet("{id:Guid}")]
     [ProducesResponseType(200, Type = typeof(ApiResponse<GetUserResponse>))]

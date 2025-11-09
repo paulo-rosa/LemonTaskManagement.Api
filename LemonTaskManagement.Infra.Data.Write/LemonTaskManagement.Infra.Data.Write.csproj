@@ -14,6 +14,7 @@
   </ItemGroup>
   
   <ItemGroup>
+	<ProjectReference Include="..\LemonTaskManagement.Domain.Commands\LemonTaskManagement.Domain.Commands.csproj" />
 	<ProjectReference Include="..\LemonTaskManagement.Infra.Data\LemonTaskManagement.Infra.Data.csproj" />
   </ItemGroup>
   

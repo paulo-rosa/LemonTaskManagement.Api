@@ -21,6 +21,7 @@
   </ItemGroup>
 
   <ItemGroup>
+	<ProjectReference Include="..\LemonTaskManagement.Domain.Commands\LemonTaskManagement.Domain.Commands.csproj" />
 	<ProjectReference Include="..\LemonTaskManagement.Domain.Queries\LemonTaskManagement.Domain.Queries.csproj" />
 	<ProjectReference Include="..\LemonTaskManagement.Infra.Data.Read\LemonTaskManagement.Infra.Data.Read.csproj" />
 	<ProjectReference Include="..\LemonTaskManagement.Infra.Data.Write\LemonTaskManagement.Infra.Data.Write.csproj" />
