@@ -14,4 +14,6 @@ public interface ICardsCommandRepository
     Task<Card> GetCardByIdAsync(Guid cardId);
     Task<Card> MoveCardAsync(Guid cardId, Guid targetBoardColumnId, int targetOrder);
     Task ReorderCardsAsync(Guid boardColumnId, int fromOrder);
+    Task<Card> UpdateCardAsync(UpdateCardCommand command);
+    Task<Guid?> GetCardBoardIdAsync(Guid cardId);
 }

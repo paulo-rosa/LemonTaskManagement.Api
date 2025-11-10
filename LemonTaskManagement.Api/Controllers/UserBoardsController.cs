@@ -48,6 +48,26 @@ public class UserBoardsController(
         return Created(location, new ApiResponse<CreateCardResponse>(201, "Card created successfully", response));
     }
 
+    [HttpPut("boards/{boardId:Guid}/cards/{cardId:Guid}")]
+    [ProducesResponseType(200, Type = typeof(ApiResponse<UpdateCardResponse>))]
+    [ProducesResponseType(400)]
+    [ProducesResponseType(404)]
+    public async Task<IActionResult> UpdateCardAsync(Guid userId, Guid boardId, Guid cardId, [FromBody] UpdateCardCommand command)
+    {
+        command.UserId = userId;
+        command.BoardId = boardId;
+        command.CardId = cardId;
+
+        var response = await cardsCommandService.UpdateCardAsync(command);
+
+        if (!response.Success)
+        {
+            return BadRequest(new ApiResponse<UpdateCardResponse>(400, "Failed to update card", response));
+        }
+
+        return Ok(new ApiResponse<UpdateCardResponse>(200, "Card updated successfully", response));
+    }
+
     [HttpPut("boards/{boardId:Guid}/cards/{cardId:Guid}/move")]
     [ProducesResponseType(200, Type = typeof(ApiResponse<MoveCardResponse>))]
     [ProducesResponseType(400)]

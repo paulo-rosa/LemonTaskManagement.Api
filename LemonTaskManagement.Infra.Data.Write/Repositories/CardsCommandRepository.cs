@@ -24,7 +24,7 @@ public class CardsCommandRepository(LemonTaskManagementDbContext context) : ICar
             AssignedUserId = command.AssignedUserId
         };
 
-        await context.Cards.AddAsync(card);
+        await context.AddAsync(card);
         await context.SaveChangesAsync();
 
         return card;
@@ -53,20 +53,19 @@ public class CardsCommandRepository(LemonTaskManagementDbContext context) : ICar
 
     public async Task<Card> GetCardByIdAsync(Guid cardId)
     {
-        return await context.Cards.FirstOrDefaultAsync(c => c.Id == cardId);
+        return await context.Cards
+            .Include(c => c.BoardColumn)
+            .FirstOrDefaultAsync(c => c.Id == cardId);
     }
 
     public async Task<Card> MoveCardAsync(Guid cardId, Guid targetBoardColumnId, int targetOrder)
     {
-        var card = await context.Cards.FirstOrDefaultAsync(c => c.Id == cardId);
-
-        if (card == null)
-            return null;
+        var card = await GetCardByIdAsync(cardId);
+        if (card == null) return null;
 
         card.BoardColumnId = targetBoardColumnId;
         card.Order = targetOrder;
 
-        context.Cards.Update(card);
         await context.SaveChangesAsync();
 
         return card;
@@ -80,13 +79,31 @@ public class CardsCommandRepository(LemonTaskManagementDbContext context) : ICar
 
         foreach (var card in cardsToReorder)
         {
-            card.Order += 1;
+            card.Order++;
         }
 
-        if (cardsToReorder.Any())
-        {
-            context.Cards.UpdateRange(cardsToReorder);
-            await context.SaveChangesAsync();
-        }
+        await context.SaveChangesAsync();
+    }
+
+    public async Task<Card> UpdateCardAsync(UpdateCardCommand command)
+    {
+        var card = await GetCardByIdAsync(command.CardId);
+        if (card == null) return null;
+
+        card.Description = command.Description;
+        card.AssignedUserId = command.AssignedUserId;
+
+        await context.SaveChangesAsync();
+
+        return card;
+    }
+
+    public async Task<Guid?> GetCardBoardIdAsync(Guid cardId)
+    {
+        var card = await context.Cards
+            .Include(c => c.BoardColumn)
+            .FirstOrDefaultAsync(c => c.Id == cardId);
+
+        return card?.BoardColumn?.BoardId;
     }
 }

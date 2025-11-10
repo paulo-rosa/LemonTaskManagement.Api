@@ -104,4 +104,57 @@ public class CardsCommandService(ICardsCommandRepository cardsCommandRepository)
             }
         };
     }
+
+    public async Task<UpdateCardResponse> UpdateCardAsync(UpdateCardCommand command)
+    {
+        var errors = new List<Error>();
+
+        // Validate description
+        if (string.IsNullOrWhiteSpace(command.Description))
+        {
+            errors.Add(new Error("Description", "Description is required"));
+        }
+
+        // Get the board ID for the card
+        var cardBoardId = await cardsCommandRepository.GetCardBoardIdAsync(command.CardId);
+        if (cardBoardId == null)
+        {
+            errors.Add(new Error("CardId", "Card does not exist"));
+        }
+        else if (cardBoardId != command.BoardId)
+        {
+            errors.Add(new Error("BoardId", "Card does not belong to the specified board"));
+        }
+
+        // Check if user has access to the board
+        if (cardBoardId.HasValue && !await cardsCommandRepository.UserHasAccessToBoardAsync(command.UserId, cardBoardId.Value))
+        {
+            errors.Add(new Error("UserId", "User does not have access to this board"));
+        }
+
+        if (errors.Count > 0)
+        {
+            return new UpdateCardResponse
+            {
+                Success = false,
+                Errors = errors
+            };
+        }
+
+        var updatedCard = await cardsCommandRepository.UpdateCardAsync(command);
+
+        return new UpdateCardResponse
+        {
+            Success = true,
+            Message = "Card updated successfully",
+            Data = new UpdateCardDto
+            {
+                Id = updatedCard.Id,
+                BoardColumnId = updatedCard.BoardColumnId,
+                Description = updatedCard.Description,
+                Order = updatedCard.Order,
+                AssignedUserId = updatedCard.AssignedUserId
+            }
+        };
+    }
 }

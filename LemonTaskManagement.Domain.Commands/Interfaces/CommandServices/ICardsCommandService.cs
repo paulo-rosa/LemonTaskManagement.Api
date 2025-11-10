@@ -7,4 +7,5 @@ public interface ICardsCommandService
 {
     Task<CreateCardResponse> CreateCardAsync(CreateCardCommand command);
     Task<MoveCardResponse> MoveCardAsync(MoveCardCommand command);
+    Task<UpdateCardResponse> UpdateCardAsync(UpdateCardCommand command);
 }
