@@ -11,6 +11,7 @@
   <Folder Name="/02 - SDK/">
     <Project Path="LemonTaskManagement.SDK/LemonTaskManagement.SDK.csproj" />
   </Folder>
+  <Project Path="LemonTaskManagement.Api.Tests/LemonTaskManagement.Api.Tests.csproj" />
   <Project Path="LemonTaskManagement.Api/LemonTaskManagement.Api.csproj" />
   <Project Path="LemonTaskManagement.Domain.Commands/LemonTaskManagement.Domain.Commands.csproj" />
   <Project Path="LemonTaskManagement.Domain.Core/LemonTaskManagement.Domain.Core.csproj" />
