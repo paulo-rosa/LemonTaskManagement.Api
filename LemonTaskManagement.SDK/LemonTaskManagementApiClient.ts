@@ -12,8 +12,8 @@ import axios, { AxiosError } from 'axios';
 import type { AxiosInstance, AxiosRequestConfig, AxiosResponse, CancelToken } from 'axios';
 
 export interface ILemonTaskManagementApiClient {
-    userBoards_GetUserBoards(userIdPath: string, userIdQuery: string | undefined, skip: number | undefined, take: number | undefined): Promise<ApiResponseOfGetUsersResponse>;
-    userBoards_GetUserBoard(userId: string, boardId: string): Promise<ApiResponseOfGetUserResponse>;
+    userBoards_GetUserBoards(userIdPath: string, userIdQuery: string | undefined, skip: number | undefined, take: number | undefined): Promise<ApiResponseOfGetUserBoardsResponse>;
+    userBoards_GetUserBoard(userId: string, boardId: string): Promise<ApiResponseOfGetUserBoardResponse>;
     userBoards_CreateCard(userId: string, boardId: string, command: CreateCardCommand): Promise<ApiResponseOfCreateCardResponse>;
     userBoards_MoveCard(userId: string, boardId: string, cardId: string, command: MoveCardCommand): Promise<ApiResponseOfMoveCardResponse>;
     users_GetUser(id: string): Promise<ApiResponseOfGetUserResponse>;
@@ -33,7 +33,7 @@ export class LemonTaskManagementApiClient implements ILemonTaskManagementApiClie
 
     }
 
-    userBoards_GetUserBoards(userIdPath: string, userIdQuery: string | undefined, skip: number | undefined, take: number | undefined, cancelToken?: CancelToken): Promise<ApiResponseOfGetUsersResponse> {
+    userBoards_GetUserBoards(userIdPath: string, userIdQuery: string | undefined, skip: number | undefined, take: number | undefined, cancelToken?: CancelToken): Promise<ApiResponseOfGetUserBoardsResponse> {
         let url_ = this.baseUrl + "/api/users/{userId}/boards?";
         if (userIdPath === undefined || userIdPath === null)
             throw new Error("The parameter 'userIdPath' must be defined.");
@@ -72,7 +72,7 @@ export class LemonTaskManagementApiClient implements ILemonTaskManagementApiClie
         });
     }
 
-    protected processUserBoards_GetUserBoards(response: AxiosResponse): Promise<ApiResponseOfGetUsersResponse> {
+    protected processUserBoards_GetUserBoards(response: AxiosResponse): Promise<ApiResponseOfGetUserBoardsResponse> {
         const status = response.status;
         let _headers: any = {};
         if (response.headers && typeof response.headers === "object") {
@@ -86,17 +86,17 @@ export class LemonTaskManagementApiClient implements ILemonTaskManagementApiClie
             const _responseText = response.data;
             let result200: any = null;
             let resultData200  = _responseText;
-            result200 = ApiResponseOfGetUsersResponse.fromJS(resultData200);
-            return Promise.resolve<ApiResponseOfGetUsersResponse>(result200);
+            result200 = ApiResponseOfGetUserBoardsResponse.fromJS(resultData200);
+            return Promise.resolve<ApiResponseOfGetUserBoardsResponse>(result200);
 
         } else if (status !== 200 && status !== 204) {
             const _responseText = response.data;
             return throwException("An unexpected server error occurred.", status, _responseText, _headers);
         }
-        return Promise.resolve<ApiResponseOfGetUsersResponse>(null as any);
+        return Promise.resolve<ApiResponseOfGetUserBoardsResponse>(null as any);
     }
 
-    userBoards_GetUserBoard(userId: string, boardId: string, cancelToken?: CancelToken): Promise<ApiResponseOfGetUserResponse> {
+    userBoards_GetUserBoard(userId: string, boardId: string, cancelToken?: CancelToken): Promise<ApiResponseOfGetUserBoardResponse> {
         let url_ = this.baseUrl + "/api/users/{userId}/boards/{boardId}";
         if (userId === undefined || userId === null)
             throw new Error("The parameter 'userId' must be defined.");
@@ -126,7 +126,7 @@ export class LemonTaskManagementApiClient implements ILemonTaskManagementApiClie
         });
     }
 
-    protected processUserBoards_GetUserBoard(response: AxiosResponse): Promise<ApiResponseOfGetUserResponse> {
+    protected processUserBoards_GetUserBoard(response: AxiosResponse): Promise<ApiResponseOfGetUserBoardResponse> {
         const status = response.status;
         let _headers: any = {};
         if (response.headers && typeof response.headers === "object") {
@@ -140,14 +140,14 @@ export class LemonTaskManagementApiClient implements ILemonTaskManagementApiClie
             const _responseText = response.data;
             let result200: any = null;
             let resultData200  = _responseText;
-            result200 = ApiResponseOfGetUserResponse.fromJS(resultData200);
-            return Promise.resolve<ApiResponseOfGetUserResponse>(result200);
+            result200 = ApiResponseOfGetUserBoardResponse.fromJS(resultData200);
+            return Promise.resolve<ApiResponseOfGetUserBoardResponse>(result200);
 
         } else if (status !== 200 && status !== 204) {
             const _responseText = response.data;
             return throwException("An unexpected server error occurred.", status, _responseText, _headers);
         }
-        return Promise.resolve<ApiResponseOfGetUserResponse>(null as any);
+        return Promise.resolve<ApiResponseOfGetUserBoardResponse>(null as any);
     }
 
     userBoards_CreateCard(userId: string, boardId: string, command: CreateCardCommand, cancelToken?: CancelToken): Promise<ApiResponseOfCreateCardResponse> {
@@ -395,13 +395,13 @@ export class LemonTaskManagementApiClient implements ILemonTaskManagementApiClie
     }
 }
 
-export class ApiResponseOfGetUsersResponse implements IApiResponseOfGetUsersResponse {
+export class ApiResponseOfGetUserBoardsResponse implements IApiResponseOfGetUserBoardsResponse {
     statusCode?: number;
     message?: string;
     exception?: ApiError;
-    result?: GetUsersResponse | undefined;
+    result?: GetUserBoardsResponse | undefined;
 
-    constructor(data?: IApiResponseOfGetUsersResponse) {
+    constructor(data?: IApiResponseOfGetUserBoardsResponse) {
         if (data) {
             for (var property in data) {
                 if (data.hasOwnProperty(property))
@@ -415,13 +415,13 @@ export class ApiResponseOfGetUsersResponse implements IApiResponseOfGetUsersResp
             this.statusCode = _data["statusCode"];
             this.message = _data["message"];
             this.exception = _data["exception"] ? ApiError.fromJS(_data["exception"]) : <any>undefined;
-            this.result = _data["result"] ? GetUsersResponse.fromJS(_data["result"]) : <any>undefined;
+            this.result = _data["result"] ? GetUserBoardsResponse.fromJS(_data["result"]) : <any>undefined;
         }
     }
 
-    static fromJS(data: any): ApiResponseOfGetUsersResponse {
+    static fromJS(data: any): ApiResponseOfGetUserBoardsResponse {
         data = typeof data === 'object' ? data : {};
-        let result = new ApiResponseOfGetUsersResponse();
+        let result = new ApiResponseOfGetUserBoardsResponse();
         result.init(data);
         return result;
     }
@@ -436,11 +436,11 @@ export class ApiResponseOfGetUsersResponse implements IApiResponseOfGetUsersResp
     }
 }
 
-export interface IApiResponseOfGetUsersResponse {
+export interface IApiResponseOfGetUserBoardsResponse {
     statusCode?: number;
     message?: string;
     exception?: ApiError;
-    result?: GetUsersResponse | undefined;
+    result?: GetUserBoardsResponse | undefined;
 }
 
 export class ApiError implements IApiError {
@@ -587,10 +587,10 @@ export interface IResponse {
     errors?: ErrorDto[];
 }
 
-export class ResponseOfListOfUserDto extends Response implements IResponseOfListOfUserDto {
-    data?: UserDto[] | undefined;
+export class ResponseOfListOfUserBoardDto extends Response implements IResponseOfListOfUserBoardDto {
+    data?: UserBoardDto[] | undefined;
 
-    constructor(data?: IResponseOfListOfUserDto) {
+    constructor(data?: IResponseOfListOfUserBoardDto) {
         super(data);
     }
 
@@ -600,14 +600,14 @@ export class ResponseOfListOfUserDto extends Response implements IResponseOfList
             if (Array.isArray(_data["data"])) {
                 this.data = [] as any;
                 for (let item of _data["data"])
-                    this.data!.push(UserDto.fromJS(item));
+                    this.data!.push(UserBoardDto.fromJS(item));
             }
         }
     }
 
-    static override fromJS(data: any): ResponseOfListOfUserDto {
+    static override fromJS(data: any): ResponseOfListOfUserBoardDto {
         data = typeof data === 'object' ? data : {};
-        let result = new ResponseOfListOfUserDto();
+        let result = new ResponseOfListOfUserBoardDto();
         result.init(data);
         return result;
     }
@@ -624,13 +624,13 @@ export class ResponseOfListOfUserDto extends Response implements IResponseOfList
     }
 }
 
-export interface IResponseOfListOfUserDto extends IResponse {
-    data?: UserDto[] | undefined;
+export interface IResponseOfListOfUserBoardDto extends IResponse {
+    data?: UserBoardDto[] | undefined;
 }
 
-export class GetUsersResponse extends ResponseOfListOfUserDto implements IGetUsersResponse {
+export class GetUserBoardsResponse extends ResponseOfListOfUserBoardDto implements IGetUserBoardsResponse {
 
-    constructor(data?: IGetUsersResponse) {
+    constructor(data?: IGetUserBoardsResponse) {
         super(data);
     }
 
@@ -638,9 +638,9 @@ export class GetUsersResponse extends ResponseOfListOfUserDto implements IGetUse
         super.init(_data);
     }
 
-    static override fromJS(data: any): GetUsersResponse {
+    static override fromJS(data: any): GetUserBoardsResponse {
         data = typeof data === 'object' ? data : {};
-        let result = new GetUsersResponse();
+        let result = new GetUserBoardsResponse();
         result.init(data);
         return result;
     }
@@ -652,7 +652,59 @@ export class GetUsersResponse extends ResponseOfListOfUserDto implements IGetUse
     }
 }
 
-export interface IGetUsersResponse extends IResponseOfListOfUserDto {
+export interface IGetUserBoardsResponse extends IResponseOfListOfUserBoardDto {
+}
+
+export class UserBoardDto implements IUserBoardDto {
+    userId?: string;
+    user?: UserDto | undefined;
+    boardId?: string;
+    board?: BoardDto | undefined;
+    createdAt?: Date;
+
+    constructor(data?: IUserBoardDto) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.userId = _data["userId"];
+            this.user = _data["user"] ? UserDto.fromJS(_data["user"]) : <any>undefined;
+            this.boardId = _data["boardId"];
+            this.board = _data["board"] ? BoardDto.fromJS(_data["board"]) : <any>undefined;
+            this.createdAt = _data["createdAt"] ? new Date(_data["createdAt"].toString()) : <any>undefined;
+        }
+    }
+
+    static fromJS(data: any): UserBoardDto {
+        data = typeof data === 'object' ? data : {};
+        let result = new UserBoardDto();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["userId"] = this.userId;
+        data["user"] = this.user ? this.user.toJSON() : <any>undefined;
+        data["boardId"] = this.boardId;
+        data["board"] = this.board ? this.board.toJSON() : <any>undefined;
+        data["createdAt"] = this.createdAt ? this.createdAt.toISOString() : <any>undefined;
+        return data;
+    }
+}
+
+export interface IUserBoardDto {
+    userId?: string;
+    user?: UserDto | undefined;
+    boardId?: string;
+    board?: BoardDto | undefined;
+    createdAt?: Date;
 }
 
 export class UserDto implements IUserDto {
@@ -703,6 +755,198 @@ export interface IUserDto {
     createdAt?: Date;
 }
 
+export class BoardDto implements IBoardDto {
+    id?: string;
+    name?: string | undefined;
+    description?: string | undefined;
+    createdAt?: Date;
+    columns?: BoardColumnDto[] | undefined;
+
+    constructor(data?: IBoardDto) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.id = _data["id"];
+            this.name = _data["name"];
+            this.description = _data["description"];
+            this.createdAt = _data["createdAt"] ? new Date(_data["createdAt"].toString()) : <any>undefined;
+            if (Array.isArray(_data["columns"])) {
+                this.columns = [] as any;
+                for (let item of _data["columns"])
+                    this.columns!.push(BoardColumnDto.fromJS(item));
+            }
+        }
+    }
+
+    static fromJS(data: any): BoardDto {
+        data = typeof data === 'object' ? data : {};
+        let result = new BoardDto();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["id"] = this.id;
+        data["name"] = this.name;
+        data["description"] = this.description;
+        data["createdAt"] = this.createdAt ? this.createdAt.toISOString() : <any>undefined;
+        if (Array.isArray(this.columns)) {
+            data["columns"] = [];
+            for (let item of this.columns)
+                data["columns"].push(item ? item.toJSON() : <any>undefined);
+        }
+        return data;
+    }
+}
+
+export interface IBoardDto {
+    id?: string;
+    name?: string | undefined;
+    description?: string | undefined;
+    createdAt?: Date;
+    columns?: BoardColumnDto[] | undefined;
+}
+
+export class BoardColumnDto implements IBoardColumnDto {
+    id?: string;
+    boardId?: string;
+    name?: string | undefined;
+    order?: number;
+    createdAt?: Date;
+    updatedAt?: Date;
+    cards?: CardDto[] | undefined;
+
+    constructor(data?: IBoardColumnDto) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.id = _data["id"];
+            this.boardId = _data["boardId"];
+            this.name = _data["name"];
+            this.order = _data["order"];
+            this.createdAt = _data["createdAt"] ? new Date(_data["createdAt"].toString()) : <any>undefined;
+            this.updatedAt = _data["updatedAt"] ? new Date(_data["updatedAt"].toString()) : <any>undefined;
+            if (Array.isArray(_data["cards"])) {
+                this.cards = [] as any;
+                for (let item of _data["cards"])
+                    this.cards!.push(CardDto.fromJS(item));
+            }
+        }
+    }
+
+    static fromJS(data: any): BoardColumnDto {
+        data = typeof data === 'object' ? data : {};
+        let result = new BoardColumnDto();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["id"] = this.id;
+        data["boardId"] = this.boardId;
+        data["name"] = this.name;
+        data["order"] = this.order;
+        data["createdAt"] = this.createdAt ? this.createdAt.toISOString() : <any>undefined;
+        data["updatedAt"] = this.updatedAt ? this.updatedAt.toISOString() : <any>undefined;
+        if (Array.isArray(this.cards)) {
+            data["cards"] = [];
+            for (let item of this.cards)
+                data["cards"].push(item ? item.toJSON() : <any>undefined);
+        }
+        return data;
+    }
+}
+
+export interface IBoardColumnDto {
+    id?: string;
+    boardId?: string;
+    name?: string | undefined;
+    order?: number;
+    createdAt?: Date;
+    updatedAt?: Date;
+    cards?: CardDto[] | undefined;
+}
+
+export class CardDto implements ICardDto {
+    id?: string;
+    boardColumnId?: string;
+    description?: string | undefined;
+    order?: number;
+    assignedUserId?: string | undefined;
+    assignedUser?: UserDto | undefined;
+    createdAt?: Date;
+    updatedAt?: Date;
+
+    constructor(data?: ICardDto) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.id = _data["id"];
+            this.boardColumnId = _data["boardColumnId"];
+            this.description = _data["description"];
+            this.order = _data["order"];
+            this.assignedUserId = _data["assignedUserId"];
+            this.assignedUser = _data["assignedUser"] ? UserDto.fromJS(_data["assignedUser"]) : <any>undefined;
+            this.createdAt = _data["createdAt"] ? new Date(_data["createdAt"].toString()) : <any>undefined;
+            this.updatedAt = _data["updatedAt"] ? new Date(_data["updatedAt"].toString()) : <any>undefined;
+        }
+    }
+
+    static fromJS(data: any): CardDto {
+        data = typeof data === 'object' ? data : {};
+        let result = new CardDto();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["id"] = this.id;
+        data["boardColumnId"] = this.boardColumnId;
+        data["description"] = this.description;
+        data["order"] = this.order;
+        data["assignedUserId"] = this.assignedUserId;
+        data["assignedUser"] = this.assignedUser ? this.assignedUser.toJSON() : <any>undefined;
+        data["createdAt"] = this.createdAt ? this.createdAt.toISOString() : <any>undefined;
+        data["updatedAt"] = this.updatedAt ? this.updatedAt.toISOString() : <any>undefined;
+        return data;
+    }
+}
+
+export interface ICardDto {
+    id?: string;
+    boardColumnId?: string;
+    description?: string | undefined;
+    order?: number;
+    assignedUserId?: string | undefined;
+    assignedUser?: UserDto | undefined;
+    createdAt?: Date;
+    updatedAt?: Date;
+}
+
 export class ErrorDto implements IErrorDto {
     property?: string;
     message?: string;
@@ -743,13 +987,13 @@ export interface IErrorDto {
     message?: string;
 }
 
-export class ApiResponseOfGetUserResponse implements IApiResponseOfGetUserResponse {
+export class ApiResponseOfGetUserBoardResponse implements IApiResponseOfGetUserBoardResponse {
     statusCode?: number;
     message?: string;
     exception?: ApiError;
-    result?: GetUserResponse | undefined;
+    result?: GetUserBoardResponse | undefined;
 
-    constructor(data?: IApiResponseOfGetUserResponse) {
+    constructor(data?: IApiResponseOfGetUserBoardResponse) {
         if (data) {
             for (var property in data) {
                 if (data.hasOwnProperty(property))
@@ -763,13 +1007,13 @@ export class ApiResponseOfGetUserResponse implements IApiResponseOfGetUserRespon
             this.statusCode = _data["statusCode"];
             this.message = _data["message"];
             this.exception = _data["exception"] ? ApiError.fromJS(_data["exception"]) : <any>undefined;
-            this.result = _data["result"] ? GetUserResponse.fromJS(_data["result"]) : <any>undefined;
+            this.result = _data["result"] ? GetUserBoardResponse.fromJS(_data["result"]) : <any>undefined;
         }
     }
 
-    static fromJS(data: any): ApiResponseOfGetUserResponse {
+    static fromJS(data: any): ApiResponseOfGetUserBoardResponse {
         data = typeof data === 'object' ? data : {};
-        let result = new ApiResponseOfGetUserResponse();
+        let result = new ApiResponseOfGetUserBoardResponse();
         result.init(data);
         return result;
     }
@@ -784,30 +1028,30 @@ export class ApiResponseOfGetUserResponse implements IApiResponseOfGetUserRespon
     }
 }
 
-export interface IApiResponseOfGetUserResponse {
+export interface IApiResponseOfGetUserBoardResponse {
     statusCode?: number;
     message?: string;
     exception?: ApiError;
-    result?: GetUserResponse | undefined;
+    result?: GetUserBoardResponse | undefined;
 }
 
-export class ResponseOfUserDto extends Response implements IResponseOfUserDto {
-    data?: UserDto | undefined;
+export class ResponseOfUserBoardDto extends Response implements IResponseOfUserBoardDto {
+    data?: UserBoardDto | undefined;
 
-    constructor(data?: IResponseOfUserDto) {
+    constructor(data?: IResponseOfUserBoardDto) {
         super(data);
     }
 
     override init(_data?: any) {
         super.init(_data);
         if (_data) {
-            this.data = _data["data"] ? UserDto.fromJS(_data["data"]) : <any>undefined;
+            this.data = _data["data"] ? UserBoardDto.fromJS(_data["data"]) : <any>undefined;
         }
     }
 
-    static override fromJS(data: any): ResponseOfUserDto {
+    static override fromJS(data: any): ResponseOfUserBoardDto {
         data = typeof data === 'object' ? data : {};
-        let result = new ResponseOfUserDto();
+        let result = new ResponseOfUserBoardDto();
         result.init(data);
         return result;
     }
@@ -820,13 +1064,13 @@ export class ResponseOfUserDto extends Response implements IResponseOfUserDto {
     }
 }
 
-export interface IResponseOfUserDto extends IResponse {
-    data?: UserDto | undefined;
+export interface IResponseOfUserBoardDto extends IResponse {
+    data?: UserBoardDto | undefined;
 }
 
-export class GetUserResponse extends ResponseOfUserDto implements IGetUserResponse {
+export class GetUserBoardResponse extends ResponseOfUserBoardDto implements IGetUserBoardResponse {
 
-    constructor(data?: IGetUserResponse) {
+    constructor(data?: IGetUserBoardResponse) {
         super(data);
     }
 
@@ -834,9 +1078,9 @@ export class GetUserResponse extends ResponseOfUserDto implements IGetUserRespon
         super.init(_data);
     }
 
-    static override fromJS(data: any): GetUserResponse {
+    static override fromJS(data: any): GetUserBoardResponse {
         data = typeof data === 'object' ? data : {};
-        let result = new GetUserResponse();
+        let result = new GetUserBoardResponse();
         result.init(data);
         return result;
     }
@@ -848,7 +1092,7 @@ export class GetUserResponse extends ResponseOfUserDto implements IGetUserRespon
     }
 }
 
-export interface IGetUserResponse extends IResponseOfUserDto {
+export interface IGetUserBoardResponse extends IResponseOfUserBoardDto {
 }
 
 export class ApiResponseOfCreateCardResponse implements IApiResponseOfCreateCardResponse {
@@ -1337,6 +1581,230 @@ export interface IMoveCardCommand {
     boardId?: string;
     targetBoardColumnId?: string;
     targetOrder?: number;
+}
+
+export class ApiResponseOfGetUserResponse implements IApiResponseOfGetUserResponse {
+    statusCode?: number;
+    message?: string;
+    exception?: ApiError;
+    result?: GetUserResponse | undefined;
+
+    constructor(data?: IApiResponseOfGetUserResponse) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.statusCode = _data["statusCode"];
+            this.message = _data["message"];
+            this.exception = _data["exception"] ? ApiError.fromJS(_data["exception"]) : <any>undefined;
+            this.result = _data["result"] ? GetUserResponse.fromJS(_data["result"]) : <any>undefined;
+        }
+    }
+
+    static fromJS(data: any): ApiResponseOfGetUserResponse {
+        data = typeof data === 'object' ? data : {};
+        let result = new ApiResponseOfGetUserResponse();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["statusCode"] = this.statusCode;
+        data["message"] = this.message;
+        data["exception"] = this.exception ? this.exception.toJSON() : <any>undefined;
+        data["result"] = this.result ? this.result.toJSON() : <any>undefined;
+        return data;
+    }
+}
+
+export interface IApiResponseOfGetUserResponse {
+    statusCode?: number;
+    message?: string;
+    exception?: ApiError;
+    result?: GetUserResponse | undefined;
+}
+
+export class ResponseOfUserDto extends Response implements IResponseOfUserDto {
+    data?: UserDto | undefined;
+
+    constructor(data?: IResponseOfUserDto) {
+        super(data);
+    }
+
+    override init(_data?: any) {
+        super.init(_data);
+        if (_data) {
+            this.data = _data["data"] ? UserDto.fromJS(_data["data"]) : <any>undefined;
+        }
+    }
+
+    static override fromJS(data: any): ResponseOfUserDto {
+        data = typeof data === 'object' ? data : {};
+        let result = new ResponseOfUserDto();
+        result.init(data);
+        return result;
+    }
+
+    override toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["data"] = this.data ? this.data.toJSON() : <any>undefined;
+        super.toJSON(data);
+        return data;
+    }
+}
+
+export interface IResponseOfUserDto extends IResponse {
+    data?: UserDto | undefined;
+}
+
+export class GetUserResponse extends ResponseOfUserDto implements IGetUserResponse {
+
+    constructor(data?: IGetUserResponse) {
+        super(data);
+    }
+
+    override init(_data?: any) {
+        super.init(_data);
+    }
+
+    static override fromJS(data: any): GetUserResponse {
+        data = typeof data === 'object' ? data : {};
+        let result = new GetUserResponse();
+        result.init(data);
+        return result;
+    }
+
+    override toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        super.toJSON(data);
+        return data;
+    }
+}
+
+export interface IGetUserResponse extends IResponseOfUserDto {
+}
+
+export class ApiResponseOfGetUsersResponse implements IApiResponseOfGetUsersResponse {
+    statusCode?: number;
+    message?: string;
+    exception?: ApiError;
+    result?: GetUsersResponse | undefined;
+
+    constructor(data?: IApiResponseOfGetUsersResponse) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.statusCode = _data["statusCode"];
+            this.message = _data["message"];
+            this.exception = _data["exception"] ? ApiError.fromJS(_data["exception"]) : <any>undefined;
+            this.result = _data["result"] ? GetUsersResponse.fromJS(_data["result"]) : <any>undefined;
+        }
+    }
+
+    static fromJS(data: any): ApiResponseOfGetUsersResponse {
+        data = typeof data === 'object' ? data : {};
+        let result = new ApiResponseOfGetUsersResponse();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["statusCode"] = this.statusCode;
+        data["message"] = this.message;
+        data["exception"] = this.exception ? this.exception.toJSON() : <any>undefined;
+        data["result"] = this.result ? this.result.toJSON() : <any>undefined;
+        return data;
+    }
+}
+
+export interface IApiResponseOfGetUsersResponse {
+    statusCode?: number;
+    message?: string;
+    exception?: ApiError;
+    result?: GetUsersResponse | undefined;
+}
+
+export class ResponseOfListOfUserDto extends Response implements IResponseOfListOfUserDto {
+    data?: UserDto[] | undefined;
+
+    constructor(data?: IResponseOfListOfUserDto) {
+        super(data);
+    }
+
+    override init(_data?: any) {
+        super.init(_data);
+        if (_data) {
+            if (Array.isArray(_data["data"])) {
+                this.data = [] as any;
+                for (let item of _data["data"])
+                    this.data!.push(UserDto.fromJS(item));
+            }
+        }
+    }
+
+    static override fromJS(data: any): ResponseOfListOfUserDto {
+        data = typeof data === 'object' ? data : {};
+        let result = new ResponseOfListOfUserDto();
+        result.init(data);
+        return result;
+    }
+
+    override toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        if (Array.isArray(this.data)) {
+            data["data"] = [];
+            for (let item of this.data)
+                data["data"].push(item ? item.toJSON() : <any>undefined);
+        }
+        super.toJSON(data);
+        return data;
+    }
+}
+
+export interface IResponseOfListOfUserDto extends IResponse {
+    data?: UserDto[] | undefined;
+}
+
+export class GetUsersResponse extends ResponseOfListOfUserDto implements IGetUsersResponse {
+
+    constructor(data?: IGetUsersResponse) {
+        super(data);
+    }
+
+    override init(_data?: any) {
+        super.init(_data);
+    }
+
+    static override fromJS(data: any): GetUsersResponse {
+        data = typeof data === 'object' ? data : {};
+        let result = new GetUsersResponse();
+        result.init(data);
+        return result;
+    }
+
+    override toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        super.toJSON(data);
+        return data;
+    }
+}
+
+export interface IGetUsersResponse extends IResponseOfListOfUserDto {
 }
 
 export class ApiException extends Error {

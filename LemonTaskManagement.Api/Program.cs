@@ -10,6 +10,7 @@ public class Program
 
         builder.Services.ConfigureDatabase(builder.Configuration);
         builder.Services.ConfigureInjector(builder.Configuration, builder.Environment);
+        builder.Services.ConfigureCors(builder.Configuration, builder.Environment);
 
         builder.Services.AddControllers();
         builder.Services.AddOpenApi();
@@ -30,6 +31,8 @@ public class Program
         }
 
         app.UseHttpsRedirection();
+
+        app.UseCorsConfiguration(app.Environment);
 
         app.UseAuthorization();
 

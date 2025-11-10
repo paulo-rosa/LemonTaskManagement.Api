@@ -30,4 +30,11 @@
     <Folder Include=".config\" />
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\LemonTaskManagement.Api\LemonTaskManagement.Api.csproj">
+      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
+      <SkipGetTargetFrameworkProperties>true</SkipGetTargetFrameworkProperties>
+    </ProjectReference>
+  </ItemGroup>
+
 </Project>

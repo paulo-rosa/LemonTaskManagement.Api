@@ -15,7 +15,7 @@ public class UserBoardsController(
 {
 
     [HttpGet("boards")]
-    [ProducesResponseType(200, Type = typeof(ApiResponse<GetUsersResponse>))]
+    [ProducesResponseType(200, Type = typeof(ApiResponse<GetUserBoardsResponse>))]
     public async Task<IActionResult> GetUserBoardsAsync([FromRoute] Guid userId, [FromQuery] GetUserBoardsQuery query)
     {
         query.UserId = userId;
@@ -23,7 +23,7 @@ public class UserBoardsController(
     }
 
     [HttpGet("boards/{boardId:Guid}")]
-    [ProducesResponseType(200, Type = typeof(ApiResponse<GetUserResponse>))]
+    [ProducesResponseType(200, Type = typeof(ApiResponse<GetUserBoardResponse>))]
     public async Task<IActionResult> GetUserBoardAsync(Guid userId, Guid boardId) =>
         Ok(await userBoardsQueryService.GetUserBoardAsync(new GetUserBoardQuery(userId, boardId)));
 
