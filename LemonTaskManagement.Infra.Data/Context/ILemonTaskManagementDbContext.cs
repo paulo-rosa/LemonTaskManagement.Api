@@ -3,14 +3,13 @@ using Microsoft.EntityFrameworkCore;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace LemonTaskManagement.Infra.Data.Context
+namespace LemonTaskManagement.Infra.Data.Context;
+
+public interface ILemonTaskManagementDbContext
 {
-    public interface ILemonTaskManagementDbContext
-    {
-        Task<int> SaveChangesAsync(CancellationToken cancellationToken = default);
-        int SaveChanges();
-        DbSet<User> Users { get; set; }
-        DbSet<Board> Boards { get; set; }
-        DbSet<UserBoard> UserBoards { get; set; }
-    }
+    Task<int> SaveChangesAsync(CancellationToken cancellationToken = default);
+    int SaveChanges();
+    DbSet<User> Users { get; set; }
+    DbSet<Board> Boards { get; set; }
+    DbSet<BoardUser> BoardUsers { get; set; }
 }

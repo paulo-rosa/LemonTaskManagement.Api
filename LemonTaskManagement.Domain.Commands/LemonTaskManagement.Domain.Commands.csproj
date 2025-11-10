@@ -1,0 +1,18 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+	<AssemblyName>LemonTaskManagement.Domain.Commands</AssemblyName>
+	<IsPackable>false</IsPackable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\LemonTaskManagement.Domain.Core\LemonTaskManagement.Domain.Core.csproj" />
+    <ProjectReference Include="..\LemonTaskManagement.Domain.Entities\LemonTaskManagement.Domain.Entities.csproj" />
+    <ProjectReference Include="..\LemonTaskManagement.Domain.Queries\LemonTaskManagement.Domain.Queries.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.Extensions.Configuration.Abstractions" />
+  </ItemGroup>
+
+</Project>

@@ -4,15 +4,20 @@
 FROM mcr.microsoft.com/dotnet/aspnet:9.0 AS base
 USER $APP_UID
 WORKDIR /app
-EXPOSE 8080
-EXPOSE 8081
+EXPOSE 5130
+EXPOSE 5131
 
 
 # This stage is used to build the service project
 FROM mcr.microsoft.com/dotnet/sdk:9.0 AS build
 ARG BUILD_CONFIGURATION=Release
 WORKDIR /src
+COPY ["Directory.Packages.props", "."]
+COPY ["Directory.Build.props", "."]
+COPY ["Directory.Build.targets", "."]
 COPY ["LemonTaskManagement.Api/LemonTaskManagement.Api.csproj", "LemonTaskManagement.Api/"]
+COPY ["LemonTaskManagement.Infra.Data/LemonTaskManagement.Infra.Data.csproj", "LemonTaskManagement.Infra.Data/"]
+COPY ["LemonTaskManagement.Domain.Entities/LemonTaskManagement.Domain.Entities.csproj", "LemonTaskManagement.Domain.Entities/"]
 RUN dotnet restore "./LemonTaskManagement.Api/LemonTaskManagement.Api.csproj"
 COPY . .
 WORKDIR "/src/LemonTaskManagement.Api"

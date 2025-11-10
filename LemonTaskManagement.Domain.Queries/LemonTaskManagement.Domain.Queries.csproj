@@ -1,0 +1,13 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+	<AssemblyName>LemonTaskManagement.Domain.Queries</AssemblyName>
+	<IsPackable>false</IsPackable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\LemonTaskManagement.Domain.Core\LemonTaskManagement.Domain.Core.csproj" />
+    <ProjectReference Include="..\LemonTaskManagement.Infra.Data\LemonTaskManagement.Infra.Data.csproj" />
+  </ItemGroup>
+
+</Project>

@@ -5,4 +5,9 @@
 	<IsPackable>false</IsPackable>
   </PropertyGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\LemonTaskManagement.Domain.Queries\LemonTaskManagement.Domain.Queries.csproj" />
+    <ProjectReference Include="..\LemonTaskManagement.Infra.Data\LemonTaskManagement.Infra.Data.csproj" />
+  </ItemGroup>
+
 </Project>

@@ -1,0 +1,11 @@
+services:
+  lemontaskmanagement.api:
+    image: ${DOCKER_REGISTRY-}lemontaskmanagementapi
+    build:
+      context: .
+      dockerfile: LemonTaskManagement.Api/Dockerfile
+    ports:
+      - "5130:5130"
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ASPNETCORE_HTTP_PORTS=5130

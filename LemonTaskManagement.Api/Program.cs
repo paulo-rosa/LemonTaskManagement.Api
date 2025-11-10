@@ -1,33 +1,57 @@
+using LemonTaskManagement.Api.Configurations;
 
-namespace LemonTaskManagement.Api
+namespace LemonTaskManagement.Api;
+
+public class Program
 {
-    public class Program
+    public static void Main(string[] args)
     {
-        public static void Main(string[] args)
+        var builder = WebApplication.CreateBuilder(args);
+
+        builder.Services.ConfigureDatabase(builder.Configuration);
+        builder.Services.ConfigureInjector(builder.Configuration, builder.Environment);
+        builder.Services.ConfigureCors(builder.Configuration, builder.Environment);
+        builder.Services.ConfigureAuthentication(builder.Configuration);
+
+        builder.Services.AddControllers();
+        builder.Services.AddOpenApi();
+
+        builder.Services.AddOpenApiDocument(options =>
         {
-            var builder = WebApplication.CreateBuilder(args);
+            options.Title = "LemonTaskManagement API";
+            options.Description = "API for LemonTaskManagement services";
+            options.Version = "1.0.0";
 
-            // Add services to the container.
-
-            builder.Services.AddControllers();
-            // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
-            builder.Services.AddOpenApi();
-
-            var app = builder.Build();
-
-            // Configure the HTTP request pipeline.
-            if (app.Environment.IsDevelopment())
+            options.AddSecurity("Bearer", new NSwag.OpenApiSecurityScheme
             {
-                app.MapOpenApi();
-            }
+                Type = NSwag.OpenApiSecuritySchemeType.Http,
+                Scheme = "bearer",
+                BearerFormat = "JWT",
+                Description = "Enter your JWT token in the text input below.\n\nExample: \"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...\""
+            });
 
-            app.UseHttpsRedirection();
+            options.OperationProcessors.Add(new NSwag.Generation.Processors.Security.AspNetCoreOperationSecurityScopeProcessor("Bearer"));
+        });
 
-            app.UseAuthorization();
+        var app = builder.Build();
 
-            app.MapControllers();
-
-            app.Run();
+        if (app.Environment.IsDevelopment())
+        {
+            app.MapOpenApi();
+            app.UseOpenApi();
         }
+
+        app.UseHttpsRedirection();
+
+        app.UseCorsConfiguration(app.Environment);
+
+        app.UseAuthentication();
+        app.UseAuthorization();
+
+        app.MapControllers();
+
+        app.UseDatabase(app.Configuration);
+
+        app.Run();
     }
 }
