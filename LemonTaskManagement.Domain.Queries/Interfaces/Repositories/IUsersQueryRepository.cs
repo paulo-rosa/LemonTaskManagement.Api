@@ -10,4 +10,6 @@ public interface IUsersQueryRepository
     Task<List<User>> GetUsersAsync(GetUsersQuery query);
 
     Task<User> GetUserAsync(GetUserQuery query);
+
+    Task<User> GetUserByUsernameAsync(string username);
 }

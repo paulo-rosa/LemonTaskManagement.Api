@@ -11,6 +11,6 @@ namespace LemonTaskManagement.Domain.Queries.DTOs
         public Guid? AssignedUserId { get; set; }
         public UserDto AssignedUser { get; set; }
         public DateTimeOffset CreatedAt { get; set; }
-        public DateTimeOffset UpdatedAt { get; set; }
+        public DateTimeOffset? UpdatedAt { get; set; }
     }
 }

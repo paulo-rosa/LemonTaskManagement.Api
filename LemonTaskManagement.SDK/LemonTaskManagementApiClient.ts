@@ -12,6 +12,7 @@ import axios, { AxiosError } from 'axios';
 import type { AxiosInstance, AxiosRequestConfig, AxiosResponse, CancelToken } from 'axios';
 
 export interface ILemonTaskManagementApiClient {
+    authentication_Login(command: LoginCommand): Promise<ApiResponseOfLoginResponse>;
     userBoards_GetUserBoards(userIdPath: string, userIdQuery: string | undefined, skip: number | undefined, take: number | undefined): Promise<ApiResponseOfGetUserBoardsResponse>;
     userBoards_GetUserBoard(userId: string, boardId: string): Promise<ApiResponseOfGetUserBoardResponse>;
     userBoards_CreateCard(userId: string, boardId: string, command: CreateCardCommand): Promise<ApiResponseOfCreateCardResponse>;
@@ -31,6 +32,72 @@ export class LemonTaskManagementApiClient implements ILemonTaskManagementApiClie
 
         this.baseUrl = baseUrl ?? "";
 
+    }
+
+    authentication_Login(command: LoginCommand, cancelToken?: CancelToken): Promise<ApiResponseOfLoginResponse> {
+        let url_ = this.baseUrl + "/api/auth/login";
+        url_ = url_.replace(/[?&]$/, "");
+
+        const content_ = JSON.stringify(command);
+
+        let options_: AxiosRequestConfig = {
+            data: content_,
+            method: "POST",
+            url: url_,
+            headers: {
+                "Content-Type": "application/json",
+                "Accept": "application/json"
+            },
+            cancelToken
+        };
+
+        return this.instance.request(options_).catch((_error: any) => {
+            if (isAxiosError(_error) && _error.response) {
+                return _error.response;
+            } else {
+                throw _error;
+            }
+        }).then((_response: AxiosResponse) => {
+            return this.processAuthentication_Login(_response);
+        });
+    }
+
+    protected processAuthentication_Login(response: AxiosResponse): Promise<ApiResponseOfLoginResponse> {
+        const status = response.status;
+        let _headers: any = {};
+        if (response.headers && typeof response.headers === "object") {
+            for (const k in response.headers) {
+                if (response.headers.hasOwnProperty(k)) {
+                    _headers[k] = response.headers[k];
+                }
+            }
+        }
+        if (status === 200) {
+            const _responseText = response.data;
+            let result200: any = null;
+            let resultData200  = _responseText;
+            result200 = ApiResponseOfLoginResponse.fromJS(resultData200);
+            return Promise.resolve<ApiResponseOfLoginResponse>(result200);
+
+        } else if (status === 400) {
+            const _responseText = response.data;
+            let result400: any = null;
+            let resultData400  = _responseText;
+            result400 = ProblemDetails.fromJS(resultData400);
+            return throwException("A server side error occurred.", status, _responseText, _headers, result400);
+
+        } else if (status === 401) {
+            const _responseText = response.data;
+            let result401: any = null;
+            let resultData401  = _responseText;
+            result401 = ProblemDetails.fromJS(resultData401);
+            return throwException("A server side error occurred.", status, _responseText, _headers, result401);
+
+        } else if (status !== 200 && status !== 204) {
+            const _responseText = response.data;
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+        }
+        return Promise.resolve<ApiResponseOfLoginResponse>(null as any);
     }
 
     userBoards_GetUserBoards(userIdPath: string, userIdQuery: string | undefined, skip: number | undefined, take: number | undefined, cancelToken?: CancelToken): Promise<ApiResponseOfGetUserBoardsResponse> {
@@ -395,13 +462,13 @@ export class LemonTaskManagementApiClient implements ILemonTaskManagementApiClie
     }
 }
 
-export class ApiResponseOfGetUserBoardsResponse implements IApiResponseOfGetUserBoardsResponse {
+export class ApiResponseOfLoginResponse implements IApiResponseOfLoginResponse {
     statusCode?: number;
     message?: string;
     exception?: ApiError;
-    result?: GetUserBoardsResponse | undefined;
+    result?: LoginResponse | undefined;
 
-    constructor(data?: IApiResponseOfGetUserBoardsResponse) {
+    constructor(data?: IApiResponseOfLoginResponse) {
         if (data) {
             for (var property in data) {
                 if (data.hasOwnProperty(property))
@@ -415,13 +482,13 @@ export class ApiResponseOfGetUserBoardsResponse implements IApiResponseOfGetUser
             this.statusCode = _data["statusCode"];
             this.message = _data["message"];
             this.exception = _data["exception"] ? ApiError.fromJS(_data["exception"]) : <any>undefined;
-            this.result = _data["result"] ? GetUserBoardsResponse.fromJS(_data["result"]) : <any>undefined;
+            this.result = _data["result"] ? LoginResponse.fromJS(_data["result"]) : <any>undefined;
         }
     }
 
-    static fromJS(data: any): ApiResponseOfGetUserBoardsResponse {
+    static fromJS(data: any): ApiResponseOfLoginResponse {
         data = typeof data === 'object' ? data : {};
-        let result = new ApiResponseOfGetUserBoardsResponse();
+        let result = new ApiResponseOfLoginResponse();
         result.init(data);
         return result;
     }
@@ -436,11 +503,11 @@ export class ApiResponseOfGetUserBoardsResponse implements IApiResponseOfGetUser
     }
 }
 
-export interface IApiResponseOfGetUserBoardsResponse {
+export interface IApiResponseOfLoginResponse {
     statusCode?: number;
     message?: string;
     exception?: ApiError;
-    result?: GetUserBoardsResponse | undefined;
+    result?: LoginResponse | undefined;
 }
 
 export class ApiError implements IApiError {
@@ -585,6 +652,283 @@ export interface IResponse {
     success?: boolean;
     message?: string;
     errors?: ErrorDto[];
+}
+
+export class LoginResponse extends Response implements ILoginResponse {
+    data?: LoginDto | undefined;
+
+    constructor(data?: ILoginResponse) {
+        super(data);
+    }
+
+    override init(_data?: any) {
+        super.init(_data);
+        if (_data) {
+            this.data = _data["data"] ? LoginDto.fromJS(_data["data"]) : <any>undefined;
+        }
+    }
+
+    static override fromJS(data: any): LoginResponse {
+        data = typeof data === 'object' ? data : {};
+        let result = new LoginResponse();
+        result.init(data);
+        return result;
+    }
+
+    override toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["data"] = this.data ? this.data.toJSON() : <any>undefined;
+        super.toJSON(data);
+        return data;
+    }
+}
+
+export interface ILoginResponse extends IResponse {
+    data?: LoginDto | undefined;
+}
+
+export class LoginDto implements ILoginDto {
+    userId?: string;
+    username?: string | undefined;
+    email?: string | undefined;
+    token?: string | undefined;
+    expiresAt?: Date;
+
+    constructor(data?: ILoginDto) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.userId = _data["userId"];
+            this.username = _data["username"];
+            this.email = _data["email"];
+            this.token = _data["token"];
+            this.expiresAt = _data["expiresAt"] ? new Date(_data["expiresAt"].toString()) : <any>undefined;
+        }
+    }
+
+    static fromJS(data: any): LoginDto {
+        data = typeof data === 'object' ? data : {};
+        let result = new LoginDto();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["userId"] = this.userId;
+        data["username"] = this.username;
+        data["email"] = this.email;
+        data["token"] = this.token;
+        data["expiresAt"] = this.expiresAt ? this.expiresAt.toISOString() : <any>undefined;
+        return data;
+    }
+}
+
+export interface ILoginDto {
+    userId?: string;
+    username?: string | undefined;
+    email?: string | undefined;
+    token?: string | undefined;
+    expiresAt?: Date;
+}
+
+export class ErrorDto implements IErrorDto {
+    property?: string;
+    message?: string;
+
+    constructor(data?: IErrorDto) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.property = _data["property"];
+            this.message = _data["message"];
+        }
+    }
+
+    static fromJS(data: any): ErrorDto {
+        data = typeof data === 'object' ? data : {};
+        let result = new ErrorDto();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["property"] = this.property;
+        data["message"] = this.message;
+        return data;
+    }
+}
+
+export interface IErrorDto {
+    property?: string;
+    message?: string;
+}
+
+export class ProblemDetails implements IProblemDetails {
+    type?: string | undefined;
+    title?: string | undefined;
+    status?: number | undefined;
+    detail?: string | undefined;
+    instance?: string | undefined;
+
+    [key: string]: any;
+
+    constructor(data?: IProblemDetails) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            for (var property in _data) {
+                if (_data.hasOwnProperty(property))
+                    this[property] = _data[property];
+            }
+            this.type = _data["type"];
+            this.title = _data["title"];
+            this.status = _data["status"];
+            this.detail = _data["detail"];
+            this.instance = _data["instance"];
+        }
+    }
+
+    static fromJS(data: any): ProblemDetails {
+        data = typeof data === 'object' ? data : {};
+        let result = new ProblemDetails();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        for (var property in this) {
+            if (this.hasOwnProperty(property))
+                data[property] = this[property];
+        }
+        data["type"] = this.type;
+        data["title"] = this.title;
+        data["status"] = this.status;
+        data["detail"] = this.detail;
+        data["instance"] = this.instance;
+        return data;
+    }
+}
+
+export interface IProblemDetails {
+    type?: string | undefined;
+    title?: string | undefined;
+    status?: number | undefined;
+    detail?: string | undefined;
+    instance?: string | undefined;
+
+    [key: string]: any;
+}
+
+export class LoginCommand implements ILoginCommand {
+    username?: string | undefined;
+    password?: string | undefined;
+
+    constructor(data?: ILoginCommand) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.username = _data["username"];
+            this.password = _data["password"];
+        }
+    }
+
+    static fromJS(data: any): LoginCommand {
+        data = typeof data === 'object' ? data : {};
+        let result = new LoginCommand();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["username"] = this.username;
+        data["password"] = this.password;
+        return data;
+    }
+}
+
+export interface ILoginCommand {
+    username?: string | undefined;
+    password?: string | undefined;
+}
+
+export class ApiResponseOfGetUserBoardsResponse implements IApiResponseOfGetUserBoardsResponse {
+    statusCode?: number;
+    message?: string;
+    exception?: ApiError;
+    result?: GetUserBoardsResponse | undefined;
+
+    constructor(data?: IApiResponseOfGetUserBoardsResponse) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.statusCode = _data["statusCode"];
+            this.message = _data["message"];
+            this.exception = _data["exception"] ? ApiError.fromJS(_data["exception"]) : <any>undefined;
+            this.result = _data["result"] ? GetUserBoardsResponse.fromJS(_data["result"]) : <any>undefined;
+        }
+    }
+
+    static fromJS(data: any): ApiResponseOfGetUserBoardsResponse {
+        data = typeof data === 'object' ? data : {};
+        let result = new ApiResponseOfGetUserBoardsResponse();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["statusCode"] = this.statusCode;
+        data["message"] = this.message;
+        data["exception"] = this.exception ? this.exception.toJSON() : <any>undefined;
+        data["result"] = this.result ? this.result.toJSON() : <any>undefined;
+        return data;
+    }
+}
+
+export interface IApiResponseOfGetUserBoardsResponse {
+    statusCode?: number;
+    message?: string;
+    exception?: ApiError;
+    result?: GetUserBoardsResponse | undefined;
 }
 
 export class ResponseOfListOfUserBoardDto extends Response implements IResponseOfListOfUserBoardDto {
@@ -947,46 +1291,6 @@ export interface ICardDto {
     updatedAt?: Date;
 }
 
-export class ErrorDto implements IErrorDto {
-    property?: string;
-    message?: string;
-
-    constructor(data?: IErrorDto) {
-        if (data) {
-            for (var property in data) {
-                if (data.hasOwnProperty(property))
-                    (<any>this)[property] = (<any>data)[property];
-            }
-        }
-    }
-
-    init(_data?: any) {
-        if (_data) {
-            this.property = _data["property"];
-            this.message = _data["message"];
-        }
-    }
-
-    static fromJS(data: any): ErrorDto {
-        data = typeof data === 'object' ? data : {};
-        let result = new ErrorDto();
-        result.init(data);
-        return result;
-    }
-
-    toJSON(data?: any) {
-        data = typeof data === 'object' ? data : {};
-        data["property"] = this.property;
-        data["message"] = this.message;
-        return data;
-    }
-}
-
-export interface IErrorDto {
-    property?: string;
-    message?: string;
-}
-
 export class ApiResponseOfGetUserBoardResponse implements IApiResponseOfGetUserBoardResponse {
     statusCode?: number;
     message?: string;
@@ -1253,70 +1557,6 @@ export interface ICreateCardDto {
     description?: string | undefined;
     order?: number;
     assignedUserId?: string | undefined;
-}
-
-export class ProblemDetails implements IProblemDetails {
-    type?: string | undefined;
-    title?: string | undefined;
-    status?: number | undefined;
-    detail?: string | undefined;
-    instance?: string | undefined;
-
-    [key: string]: any;
-
-    constructor(data?: IProblemDetails) {
-        if (data) {
-            for (var property in data) {
-                if (data.hasOwnProperty(property))
-                    (<any>this)[property] = (<any>data)[property];
-            }
-        }
-    }
-
-    init(_data?: any) {
-        if (_data) {
-            for (var property in _data) {
-                if (_data.hasOwnProperty(property))
-                    this[property] = _data[property];
-            }
-            this.type = _data["type"];
-            this.title = _data["title"];
-            this.status = _data["status"];
-            this.detail = _data["detail"];
-            this.instance = _data["instance"];
-        }
-    }
-
-    static fromJS(data: any): ProblemDetails {
-        data = typeof data === 'object' ? data : {};
-        let result = new ProblemDetails();
-        result.init(data);
-        return result;
-    }
-
-    toJSON(data?: any) {
-        data = typeof data === 'object' ? data : {};
-        for (var property in this) {
-            if (this.hasOwnProperty(property))
-                data[property] = this[property];
-        }
-        data["type"] = this.type;
-        data["title"] = this.title;
-        data["status"] = this.status;
-        data["detail"] = this.detail;
-        data["instance"] = this.instance;
-        return data;
-    }
-}
-
-export interface IProblemDetails {
-    type?: string | undefined;
-    title?: string | undefined;
-    status?: number | undefined;
-    detail?: string | undefined;
-    instance?: string | undefined;
-
-    [key: string]: any;
 }
 
 export class CreateCardCommand implements ICreateCardCommand {

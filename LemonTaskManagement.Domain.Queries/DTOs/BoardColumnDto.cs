@@ -10,7 +10,7 @@ namespace LemonTaskManagement.Domain.Queries.DTOs
         public string Name { get; set; }
         public int Order { get; set; }
         public DateTimeOffset CreatedAt { get; set; }
-        public DateTimeOffset UpdatedAt { get; set; }
+        public DateTimeOffset? UpdatedAt { get; set; }
         public List<CardDto> Cards { get; set; }
     }
 }

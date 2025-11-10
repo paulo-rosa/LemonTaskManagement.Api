@@ -25,4 +25,9 @@ public class UsersQueryRepository(LemonTaskManagementReadOnlyDbContext context) 
         await DbEntity
             .AsNoTracking()
             .FirstOrDefaultAsync(u => u.Id == query.Id);
+
+    public async Task<User> GetUserByUsernameAsync(string username) =>
+        await DbEntity
+            .AsNoTracking()
+            .FirstOrDefaultAsync(u => u.Username == username);
 }

@@ -20,6 +20,7 @@ public class LemonTaskManagementDbContext(DbContextOptions<LemonTaskManagementDb
     public override async Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
     {
         var createdBy = GetCreatedBy();
+        var timestamp = DateTimeOffset.UtcNow;
 
         foreach (var entry in ChangeTracker.Entries())
         {
@@ -28,11 +29,11 @@ public class LemonTaskManagementDbContext(DbContextOptions<LemonTaskManagementDb
             switch (entry.State)
             {
                 case EntityState.Added:
-                    entity.CreatedAt = DateTimeOffset.UtcNow;
+                    entity.CreatedAt = timestamp;
                     entity.CreatedBy = createdBy;
                     break;
                 case EntityState.Modified:
-                    entity.CreatedAt = DateTimeOffset.UtcNow;
+                    entity.UpdatedAt = timestamp;
                     entity.UpdatedBy = createdBy;
                     break;
             }

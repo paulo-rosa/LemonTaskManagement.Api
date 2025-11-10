@@ -1,12 +1,14 @@
 ﻿using LemonTaskManagement.Api.Models;
 using LemonTaskManagement.Domain.Queries.Interfaces.QueryServices;
 using LemonTaskManagement.Domain.Queries.Queries;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace LemonTaskManagement.Api.Controllers;
 
 [Route("api/users")]
 [ApiController]
+[Authorize]
 public class UsersController(IUsersQueryService userQueryService) : ControllerBase
 {
     [HttpGet("{id:Guid}")]

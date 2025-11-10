@@ -16,6 +16,11 @@ public static class DatabaseSeederObjects
 
     public static List<User> GetUsers()
     {
+        // Generate proper BCrypt hashes for passwords
+        // Password123! hash
+        var password123Hash = BCrypt.Net.BCrypt.HashPassword("Password123!", 11);
+        // Admin123! hash
+        var admin123Hash = BCrypt.Net.BCrypt.HashPassword("Admin123!", 11);
 
         var users = new List<User>
         {
@@ -24,33 +29,27 @@ public static class DatabaseSeederObjects
                 Id = user1Id,
                 Username = "john.doe",
                 Email = "john.doe@example.com",
-                PasswordHash = "$2a$11$vKzN8p5XJ5kKZX8Xp8xvXeYZJ5X8X8X8X8X8X8X8X8X8X8X8X8X8Xu", // Password: Password123!
+                PasswordHash = password123Hash, // Password: Password123!
                 CreatedAt = CreatedDate,
-                CreatedBy = CreatedBy,
-                UpdatedAt = CreatedDate,
-                UpdatedBy = CreatedBy
+                CreatedBy = CreatedBy
             },
             new User
             {
                 Id = user2Id,
                 Username = "jane.smith",
                 Email = "jane.smith@example.com",
-                PasswordHash = "$2a$11$vKzN8p5XJ5kKZX8Xp8xvXeYZJ5X8X8X8X8X8X8X8X8X8X8X8X8X8Xu", // Password: Password123!
+                PasswordHash = password123Hash, // Password: Password123!
                 CreatedAt = CreatedDate,
-                CreatedBy = CreatedBy,
-                UpdatedAt = CreatedDate,
-                UpdatedBy = CreatedBy
+                CreatedBy = CreatedBy
             },
             new User
             {
                 Id = user3Id,
                 Username = "admin",
                 Email = "admin@example.com",
-                PasswordHash = "$2a$11$wLaN9q6YK6lLaY9Yq9ywYfZaK6Y9Y9Y9Y9Y9Y9Y9Y9Y9Y9Y9Y9Y9Yv", // Password: Admin123!
+                PasswordHash = admin123Hash, // Password: Admin123!
                 CreatedAt = CreatedDate,
-                CreatedBy = CreatedBy,
-                UpdatedAt = CreatedDate,
-                UpdatedBy = CreatedBy
+                CreatedBy = CreatedBy
             }
         };
 
@@ -73,9 +72,7 @@ public static class DatabaseSeederObjects
                 Name = "Development Tasks",
                 Description = "Track all development related tasks and features",
                 CreatedAt = CreatedDate,
-                CreatedBy = CreatedBy,
-                UpdatedAt = CreatedDate,
-                UpdatedBy = CreatedBy
+                CreatedBy = CreatedBy
             },
             new Board
             {
@@ -83,9 +80,7 @@ public static class DatabaseSeederObjects
                 Name = "Marketing Campaign",
                 Description = "Plan and execute marketing campaigns",
                 CreatedAt = CreatedDate,
-                CreatedBy = CreatedBy,
-                UpdatedAt = CreatedDate,
-                UpdatedBy = CreatedBy
+                CreatedBy = CreatedBy
             },
             new Board
             {
@@ -93,9 +88,7 @@ public static class DatabaseSeederObjects
                 Name = "Personal Projects",
                 Description = "My personal side projects and ideas",
                 CreatedAt = CreatedDate,
-                CreatedBy = CreatedBy,
-                UpdatedAt = CreatedDate,
-                UpdatedBy = CreatedBy
+                CreatedBy = CreatedBy
             },
             new Board
             {
@@ -103,9 +96,7 @@ public static class DatabaseSeederObjects
                 Name = "Team Collaboration",
                 Description = "Shared board for team tasks and discussions",
                 CreatedAt = CreatedDate,
-                CreatedBy = CreatedBy,
-                UpdatedAt = CreatedDate,
-                UpdatedBy = CreatedBy
+                CreatedBy = CreatedBy
             }
         };
 
@@ -124,18 +115,14 @@ public static class DatabaseSeederObjects
                 UserId = user1Id,
                 BoardId = board1Id,
                 CreatedAt = CreatedDate,
-                CreatedBy = CreatedBy,
-                UpdatedAt = CreatedDate,
-                UpdatedBy = CreatedBy
+                CreatedBy = CreatedBy
             },
             new BoardUser
             {
                 UserId = user1Id,
                 BoardId = board4Id,
                 CreatedAt = CreatedDate,
-                CreatedBy = CreatedBy,
-                UpdatedAt = CreatedDate,
-                UpdatedBy = CreatedBy
+                CreatedBy = CreatedBy
             },
             // Jane Smith boards
             new BoardUser
@@ -143,18 +130,14 @@ public static class DatabaseSeederObjects
                 UserId = user2Id,
                 BoardId = board2Id,
                 CreatedAt = CreatedDate,
-                CreatedBy = CreatedBy,
-                UpdatedAt = CreatedDate,
-                UpdatedBy = CreatedBy
+                CreatedBy = CreatedBy
             },
             new BoardUser
             {
                 UserId = user2Id,
                 BoardId = board4Id,
                 CreatedAt = CreatedDate,
-                CreatedBy = CreatedBy,
-                UpdatedAt = CreatedDate,
-                UpdatedBy = CreatedBy
+                CreatedBy = CreatedBy
             },
             // Admin boards (has access to all)
             new BoardUser
@@ -162,36 +145,28 @@ public static class DatabaseSeederObjects
                 UserId = user3Id,
                 BoardId = board1Id,
                 CreatedAt = CreatedDate,
-                CreatedBy = CreatedBy,
-                UpdatedAt = CreatedDate,
-                UpdatedBy = CreatedBy
+                CreatedBy = CreatedBy
             },
             new BoardUser
             {
                 UserId = user3Id,
                 BoardId = board2Id,
                 CreatedAt = CreatedDate,
-                CreatedBy = CreatedBy,
-                UpdatedAt = CreatedDate,
-                UpdatedBy = CreatedBy
+                CreatedBy = CreatedBy
             },
             new BoardUser
             {
                 UserId = user3Id,
                 BoardId = board3Id,
                 CreatedAt = CreatedDate,
-                CreatedBy = CreatedBy,
-                UpdatedAt = CreatedDate,
-                UpdatedBy = CreatedBy
+                CreatedBy = CreatedBy
             },
             new BoardUser
             {
                 UserId = user3Id,
                 BoardId = board4Id,
                 CreatedAt = CreatedDate,
-                CreatedBy = CreatedBy,
-                UpdatedAt = CreatedDate,
-                UpdatedBy = CreatedBy
+                CreatedBy = CreatedBy
             }
 
         };
@@ -240,9 +215,7 @@ public static class DatabaseSeederObjects
                 Name = "TO-DO",
                 Order = 1,
                 CreatedAt = CreatedDate,
-                CreatedBy = CreatedBy,
-                UpdatedAt = CreatedDate,
-                UpdatedBy = CreatedBy
+                CreatedBy = CreatedBy
             });
 
             boardColumns.Add(new BoardColumn
@@ -252,9 +225,7 @@ public static class DatabaseSeederObjects
                 Name = "DOING",
                 Order = 2,
                 CreatedAt = CreatedDate,
-                CreatedBy = CreatedBy,
-                UpdatedAt = CreatedDate,
-                UpdatedBy = CreatedBy
+                CreatedBy = CreatedBy
             });
 
             boardColumns.Add(new BoardColumn
@@ -264,9 +235,7 @@ public static class DatabaseSeederObjects
                 Name = "DONE",
                 Order = 3,
                 CreatedAt = CreatedDate,
-                CreatedBy = CreatedBy,
-                UpdatedAt = CreatedDate,
-                UpdatedBy = CreatedBy
+                CreatedBy = CreatedBy
             });
 
             counter++;

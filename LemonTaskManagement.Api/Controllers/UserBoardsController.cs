@@ -3,12 +3,14 @@ using LemonTaskManagement.Domain.Commands.Commands;
 using LemonTaskManagement.Domain.Commands.Interfaces.CommandServices;
 using LemonTaskManagement.Domain.Queries.Interfaces.QueryServices;
 using LemonTaskManagement.Domain.Queries.Queries;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace LemonTaskManagement.Api.Controllers;
 
 [Route("api/users/{userId:Guid}")]
 [ApiController]
+[Authorize]
 public class UserBoardsController(
     IUserBoardsQueryService userBoardsQueryService,
     ICardsCommandService cardsCommandService) : ControllerBase
@@ -42,8 +44,8 @@ public class UserBoardsController(
             return BadRequest(new ApiResponse<CreateCardResponse>(400, "Failed to create card", response));
         }
 
-        return CreatedAtAction(nameof(CreateCardAsync), new { userId, boardId, cardId = response.Data.Id },
-            new ApiResponse<CreateCardResponse>(201, "Card created successfully", response));
+        var location = $"/api/users/{userId}/boards/{boardId}";
+        return Created(location, new ApiResponse<CreateCardResponse>(201, "Card created successfully", response));
     }
 
     [HttpPut("boards/{boardId:Guid}/cards/{cardId:Guid}/move")]
