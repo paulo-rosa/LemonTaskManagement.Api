@@ -1,314 +1,192 @@
-# Lemon Task Management API
+# Lemon Task Management API - Backend
 
-A task management system built with .NET 9 following Clean Architecture principles, implementing Command Query Responsibility Segregation (CQRS) pattern with separate read and write data contexts.
+A production-ready task management system built with .NET 9, implementing Clean Architecture and CQRS patterns with JWT authentication.
 
 ## Table of Contents
 
-- [Architecture Overview](#architecture-overview)
-- [Project Structure](#project-structure)
-- [Layer Descriptions](#layer-descriptions)
+- [Architecture & Design](#architecture--design)
 - [Technology Stack](#technology-stack)
-- [Prerequisites](#prerequisites)
-- [Getting Started](#getting-started)
-- [Running with Docker](#running-with-docker)
-- [Running Locally Without Docker](#running-locally-without-docker)
-- [Database Configuration](#database-configuration)
-- [Database Migrations](#database-migrations)
-- [Creating Migrations](#creating-migrations)
-- [Applying Migrations](#applying-migrations)
-- [Removing Migrations](#removing-migrations)
-- [Project Configuration](#project-configuration)
-- [Development Guidelines](#development-guidelines)
+- [Features](#features)
+- [Quick Start](#quick-start)
+- [API Documentation](#api-documentation)
+- [Database Structure](#database-structure)
+- [Authentication](#authentication)
+- [Trade-offs & Assumptions](#trade-offs--assumptions)
+- [Future Improvements & Scalability](#future-improvements--scalability)
 
-## Architecture Overview
+---
 
-This project implements a Clean Architecture approach with CQRS (Command Query Responsibility Segregation) pattern. The architecture ensures:
+## Architecture & Design
 
-- **Separation of Concerns**: Each layer has a distinct responsibility
-- **Dependency Inversion**: Dependencies point inward toward the domain layer
-- **Testability**: Business logic is decoupled from infrastructure concerns
-- **Maintainability**: Clear boundaries between layers facilitate easier maintenance
-- **Scalability**: CQRS pattern allows independent scaling of read and write operations
+### Clean Architecture with CQRS
 
-### Architecture Diagram
+The project follows **Clean Architecture** principles with **CQRS (Command Query Responsibility Segregation)** pattern, ensuring separation of concerns and maintainability.
 
 ```
-┌────────────────────────────────────────────┐
-│          Presentation Layer                │
-│          LemonTaskManagement.Api           │
-│     (Controllers, Configurations, DTOs)    │
-└──────────────────────┬─────────────────────┘
-                       │
-        ┌──────────────▼──────────────┐
-        │                             │
-┌───────▼──────────┐         ┌────────▼─────────┐
-│  Domain.Queries  │         │ Domain.Commands  │
-│  (Query Handlers)│         │(Command Handlers)│
-└───────┬──────────┘         └────────┬─────────┘
-        │                             │
-        └──────────────┬──────────────┘
-                       │
-┌──────────────────────▼─────────────────────┐
-│                Domain Core                 │
-│        (Shared Models, Response Types)     │
-└────────────────────────────────────────────┘
-                       │
-        ┌──────────────▼──────────────┐
-        │                             │
-┌───────▼──────────┐         ┌────────▼─────────┐
-│ Infra.Data.Read  │         │Infra.Data.Write  │
-│(Read-Only DbCtx) │         │(Write DbContext) │
-└───────┬──────────┘         └────────┬─────────┘
-        │                             │
-        └──────────────┬──────────────┘
-                       │
-┌──────────────────────▼──────────────────────────┐
-│             Infra.Data (Shared)                 │
-│     (Base Contexts, Configurations, Interfaces) │
-└──────────────────────┬──────────────────────────┘
-                       │
-┌──────────────────────▼──────────────────────────┐
-│             Domain.Entities                     │
-│        (User, Board, BoardUser, etc.)           │
-└─────────────────────────────────────────────────┘
+┌─────────────────────────────────────────┐
+│         API Layer                       │
+│  (Controllers, Auth, Configuration)     │
+└──────────────┬──────────────────────────┘
+               │
+      ┌────────┴────────┐
+      │                 │
+┌─────▼──────┐    ┌─────▼──────┐
+│  Queries   │    │  Commands  │
+│  (Read)    │    │  (Write)   │
+└─────┬──────┘    └─────┬──────┘
+      │                 │
+      └────────┬────────┘
+               │
+      ┌────────▼────────┐
+      │  Domain Core    │
+      │  (Shared Logic) │
+      └────────┬────────┘
+               │
+      ┌────────▼────────┐
+      │  Infrastructure │
+      │  Read │ Write   │
+      └────────┬────────┘
+               │
+      ┌────────▼────────┐
+      │    Entities     │
+      │   (Domain)      │
+      └─────────────────┘
 ```
 
-## Project Structure
+### Project Structure
 
 ```
 LemonTaskManagement.Api/
-├── LemonTaskManagement.Api/                 # API Layer
-├── LemonTaskManagement.Domain.Entities/     # Domain Entities
-├── LemonTaskManagement.Domain.Core/         # Domain Core Models
-├── LemonTaskManagement.Domain.Queries/      # Query Layer (Read)
-├── LemonTaskManagement.Domain.Commands/     # Command Layer (Write)
-├── LemonTaskManagement.Infra.Data/          # Shared Infrastructure
-├── LemonTaskManagement.Infra.Data.Read/     # Read Infrastructure
-├── LemonTaskManagement.Infra.Data.Write/    # Write Infrastructure
-├── docker-compose.yml                       # Docker Compose Configuration
-└── LemonTaskManagement.Api.slnx             # Solution File
+├── LemonTaskManagement.Api/             # Presentation (Controllers, Auth)
+├── LemonTaskManagement.Domain.Commands/ # Write operations & validation
+├── LemonTaskManagement.Domain.Queries/  # Read operations & DTOs
+├── LemonTaskManagement.Domain.Core/     # Shared models & responses
+├── LemonTaskManagement.Domain.Entities/ # Domain entities
+├── LemonTaskManagement.Infra.Data/      # Shared data infrastructure
+├── LemonTaskManagement.Infra.Data.Read/ # Read-optimized repository
+└── LemonTaskManagement.Infra.Data.Write/# Write repository & migrations
 ```
 
-## Layer Descriptions
+### Key Design Decisions
 
-### 1. LemonTaskManagement.Api
-**Purpose**: Presentation layer that handles HTTP requests and responses.
+**1. CQRS Pattern**
+- **Why**: Separates read and write concerns, allowing independent optimization
+- **Trade-off**: Added complexity vs. better performance and scalability
+- **Implementation**: Separate repositories for queries (AsNoTracking) and commands (with change tracking)
 
-**Responsibilities**:
-- Exposes RESTful API endpoints through controllers
-- Handles request validation and model binding
-- Manages dependency injection configuration
-- Configures middleware pipeline
-- Implements API-specific cross-cutting concerns (logging, exception handling)
+**2. Repository Pattern**
+- **Why**: Abstracts data access, making it testable and maintainable
+- **Trade-off**: Additional abstraction layer vs. flexibility and testability
 
-**Key Components**:
-- Controllers: Handle HTTP requests and coordinate with domain services
-- Configurations: Database setup, dependency injection, and application settings
-- Models: API-specific DTOs and response models
+**3. JWT Authentication**
+- **Why**: Stateless, scalable authentication suitable for APIs
+- **Trade-off**: Token management complexity vs. scalability and performance
 
-### 2. LemonTaskManagement.Domain.Entities
-**Purpose**: Core domain models representing business entities.
+**4. EF Core with In-Memory Database**
+- **Why**: Quick setup for development/demo, easy switch to PostgreSQL
+- **Trade-off**: In-memory loses data on restart vs. zero infrastructure setup
 
-**Responsibilities**:
-- Defines business entities (User, Board, BoardUser, etc.)
-- Contains entity properties and relationships
-- Provides base entity functionality (EntityBase with audit fields)
-
-**Key Characteristics**:
-- Technology agnostic (.NET Standard 2.1)
-- No dependencies on infrastructure or application layers
-- Pure domain objects with business-relevant properties
-
-### 3. LemonTaskManagement.Domain.Core
-**Purpose**: Shared domain models and common abstractions.
-
-**Responsibilities**:
-- Provides response wrappers and result types
-- Contains error handling models
-- Defines shared domain interfaces and base types
-
-**Key Components**:
-- Response<T>: Generic response wrapper for API operations
-- Error: Standard error representation
-
-### 4. LemonTaskManagement.Domain.Queries
-**Purpose**: Implements the Query side of CQRS pattern.
-
-**Responsibilities**:
-- Defines query models and query handlers
-- Implements query-specific business logic
-- Contains DTOs for read operations
-- Defines interfaces for query repositories
-
-**Key Components**:
-- Query Services: Process queries and transform data into DTOs
-- Query Models: Represent query requests (GetUserQuery, GetUsersQuery)
-- DTOs: Data Transfer Objects for read operations
-- Repository Interfaces: Contracts for data retrieval
-
-**Design Principle**: Optimized for read performance with no write operations.
-
-### 5. LemonTaskManagement.Domain.Commands
-**Purpose**: Implements the Command side of CQRS pattern.
-
-**Responsibilities**:
-- Defines command models and command handlers
-- Implements write-specific business logic and validation
-- Contains command-specific DTOs
-- Defines interfaces for command repositories
-
-**Design Principle**: Focused on write operations and business rule enforcement.
-
-### 6. LemonTaskManagement.Infra.Data
-**Purpose**: Shared infrastructure components for data access.
-
-**Responsibilities**:
-- Provides base DbContext implementation
-- Defines entity configurations (Fluent API mappings)
-- Contains shared database interfaces
-- Implements repository base classes
-
-**Key Components**:
-- ILemonTaskManagementDbContext: Shared database context interface
-- LemonTaskManagementBaseDbContext: Base context with common configuration
-- Entity Configurations: EF Core entity mappings for User, Board, BoardUser
-
-### 7. LemonTaskManagement.Infra.Data.Read
-**Purpose**: Read-optimized data access infrastructure.
-
-**Responsibilities**:
-- Implements read-only DbContext
-- Contains query repository implementations
-- Optimizes queries for read performance
-
-**Key Components**:
-- LemonTaskManagementReadOnlyDbContext: Read-only database context
-- Query Repositories: Implement query interfaces with AsNoTracking()
-
-**Optimization**: Uses EF Core's AsNoTracking() for better read performance.
-
-### 8. LemonTaskManagement.Infra.Data.Write
-**Purpose**: Write-optimized data access infrastructure.
-
-**Responsibilities**:
-- Implements write DbContext with change tracking
-- Handles database migrations
-- Manages data seeding
-- Implements audit field tracking (CreatedAt, CreatedBy, UpdatedAt, UpdatedBy)
-
-**Key Components**:
-- LemonTaskManagementDbContext: Full-featured write context
-- Seeder: Database initialization and seed data
-- Migration Management: Handles database schema evolution
+---
 
 ## Technology Stack
 
-- **Framework**: .NET 9.0
-- **Database**: PostgreSQL (with in-memory option for development)
-- **ORM**: Entity Framework Core
-- **Containerization**: Docker & Docker Compose
-- **API Documentation**: OpenAPI (Swagger)
-- **Architecture Patterns**: 
-  - Clean Architecture
-  - CQRS (Command Query Responsibility Segregation)
-  - Repository Pattern
-  - Dependency Injection
+### Core Technologies
+- **.NET 9.0** - Latest framework with performance improvements
+- **Entity Framework Core** - ORM with migration support
+- **PostgreSQL** - Production database (In-Memory for development)
+- **BCrypt.Net** - Secure password hashing
+- **JWT Bearer Authentication** - Stateless authentication
+- **Swagger/OpenAPI** - API documentation
 
-## Prerequisites
+### Architecture Patterns
+- Clean Architecture
+- CQRS (Command Query Responsibility Segregation)
+- Repository Pattern
+- Dependency Injection
 
-### For Running Locally
+---
+
+## Features
+
+### Production MVP Features
+
+**User Management**
+- Secure user authentication with JWT
+- BCrypt password hashing
+- User profile management
+
+**Board Management**
+- Create and manage multiple boards
+- Board-level access control
+- User-board associations
+
+**Card Management**
+- Create cards in board columns
+- Update card content and assignments
+- Move cards between columns
+- Card ordering within columns
+
+**Security & Authorization**
+- JWT-based authentication
+- Board-level access control
+- Protected API endpoints
+- Token expiration handling
+
+**Audit Trail**
+- Automatic tracking of `CreatedAt`, `CreatedBy`
+- `UpdatedAt`, `UpdatedBy` on modifications
+- Full audit history for compliance
+
+**API Documentation**
+- Interactive Swagger UI
+- JWT authentication support in Swagger
+- Complete endpoint documentation
+
+---
+
+## Quick Start
+
+### Prerequisites
 - [.NET 9 SDK](https://dotnet.microsoft.com/download/dotnet/9.0)
-- [PostgreSQL 14+](https://www.postgresql.org/download/) (if not using in-memory database)
+- (Optional) [PostgreSQL 14+](https://www.postgresql.org/download/) for production
 
-### For Running with Docker
-- [Docker Desktop](https://www.docker.com/products/docker-desktop)
-- [Docker Compose](https://docs.docker.com/compose/install/) (included with Docker Desktop)
-
-## Getting Started
-
-### Running with Docker
+### Setup Steps
 
 1. **Clone the repository**
-   ```bash
-   git clone https://github.com/paulo-rosa/LemonTaskManagement.Api.git
-   cd LemonTaskManagement.Api
-   ```
+```bash
+git clone https://github.com/paulo-rosa/LemonTaskManagement.Api.git
+cd LemonTaskManagement.Api
+```
 
-2. **Build and run with Docker Compose**
-   ```bash
-   docker-compose up --build
-   ```
+2. **Run the application**
+```bash
+dotnet run --project LemonTaskManagement.Api
+```
 
 3. **Access the API**
-   - API Base URL: `http://localhost:5130`
-   - Swagger UI (Development): `http://localhost:5130/openapi/v1.json`
+- Swagger UI: `https://localhost:5131/swagger`
+- API Base: `https://localhost:5131`
 
-4. **Stop the application**
-   ```bash
-   docker-compose down
-   ```
+4. **Test Authentication**
+   - Open Swagger UI
+   - Use `/api/auth/login` with credentials:
+     - Username: `admin`
+     - Password: `Admin123!`
+   - Copy the token from response
+   - Click "Authorize" button, paste token
+   - Test protected endpoints
 
-### Running Locally Without Docker
+### Default Test Users
 
-1. **Clone the repository**
-   ```bash
-   git clone https://github.com/paulo-rosa/LemonTaskManagement.Api.git
-   cd LemonTaskManagement.Api
-   ```
+| Username | Password | Access Level |
+|----------|----------|--------------|
+| `admin` | `Admin123!` | All boards |
+| `john.doe` | `Password123!` | Development Tasks, Team Collaboration |
+| `jane.smith` | `Password123!` | Marketing Campaign, Team Collaboration |
 
-2. **Configure the database connection**
-   
-   Edit `LemonTaskManagement.Api/appsettings.json`:
-   
-   For PostgreSQL:
-   ```json
-   {
-     "Database": {
-       "UseInMemory": false
-     },
-     "ConnectionStrings": {
-       "DefaultConnection": "Host=localhost;Port=5432;Database=LemonTaskManagement;Username=postgres;Password=yourpassword"
-     }
-   }
-   ```
-   
-   For In-Memory Database (Development Only):
-   ```json
-   {
-     "Database": {
-       "UseInMemory": true
-     }
-   }
-   ```
+### Database Configuration
 
-3. **Restore dependencies**
-   ```bash
-   dotnet restore
-   ```
-
-4. **Apply database migrations** (Skip if using in-memory database)
-   ```bash
-   cd LemonTaskManagement.Api
-   dotnet ef database update --project ../LemonTaskManagement.Infra.Data.Write
-   ```
-
-5. **Run the application**
-   ```bash
-   dotnet run --project LemonTaskManagement.Api
-   ```
-
-6. **Access the API**
-   - API Base URL: `https://localhost:5131` or `http://localhost:5130`
-   - Swagger UI (Development): `https://localhost:5131/openapi/v1.json`
-
-## Database Configuration
-
-The application supports two database modes:
-
-### In-Memory Database
-Ideal for development and testing. No external database required.
-
-Configuration in `appsettings.json`:
+**Development (In-Memory)**
 ```json
 {
   "Database": {
@@ -317,10 +195,7 @@ Configuration in `appsettings.json`:
 }
 ```
 
-### PostgreSQL Database
-Required for production environments.
-
-Configuration in `appsettings.json`:
+**Production (PostgreSQL)**
 ```json
 {
   "Database": {
@@ -332,158 +207,310 @@ Configuration in `appsettings.json`:
 }
 ```
 
-## Database Migrations
+---
 
-Entity Framework Core migrations are managed in the **LemonTaskManagement.Infra.Data.Write** project, as this is the write-focused infrastructure layer responsible for database schema changes.
+## API Documentation
 
-### Creating Migrations
-
-To create a new migration after modifying entities or configurations:
-
-```bash
-# Navigate to the API project directory
-cd LemonTaskManagement.Api
-
-# Create a new migration
-dotnet ef migrations add <MigrationName> --project ../LemonTaskManagement.Infra.Data.Write --startup-project .
-
-# Example:
-dotnet ef migrations add AddTaskEntity --project ../LemonTaskManagement.Infra.Data.Write --startup-project .
+### Authentication Endpoint
 ```
-
-**Important Notes**:
-- Migration files will be created in `LemonTaskManagement.Infra.Data.Write/Migrations/`
-- Use descriptive migration names (e.g., AddTaskTable, UpdateUserEmailIndex)
-- Always review the generated migration code before applying
-
-### Applying Migrations
-
-#### Manually Apply Migrations
-```bash
-# Navigate to the API project directory
-cd LemonTaskManagement.Api
-
-# Update the database to the latest migration
-dotnet ef database update --project ../LemonTaskManagement.Infra.Data.Write --startup-project .
-
-# Update to a specific migration
-dotnet ef database update <MigrationName> --project ../LemonTaskManagement.Infra.Data.Write --startup-project .
+POST /api/auth/login
 ```
-
-#### Automatic Migration on Startup
-The application automatically applies pending migrations on startup when using PostgreSQL:
-
-```csharp
-// DatabaseConfiguration.cs
-if (!useInMemoryDatabase)
+**Request:**
+```json
 {
-    context.Database.Migrate(); // Automatically applies pending migrations
+  "username": "admin",
+  "password": "Admin123!"
+}
+```
+**Response:**
+```json
+{
+  "data": {
+    "userId": "guid",
+    "username": "admin",
+    "email": "admin@example.com",
+    "token": "eyJhbGc...",
+    "expiresAt": "2025-01-11T12:00:00Z"
+  }
 }
 ```
 
-### Removing Migrations
+### Protected Endpoints (Require `Authorization: Bearer <token>`)
 
-To remove the last unapplied migration:
+**Users**
+- `GET /api/users` - List all users
+- `GET /api/users/{id}` - Get user by ID
 
-```bash
-cd LemonTaskManagement.Api
-dotnet ef migrations remove --project ../LemonTaskManagement.Infra.Data.Write --startup-project .
+**Boards**
+- `GET /api/users/{userId}/boards` - Get user's boards
+- `GET /api/users/{userId}/boards/{boardId}` - Get board details with cards
+
+**Cards**
+- `POST /api/users/{userId}/boards/{boardId}/cards` - Create card
+- `PUT /api/users/{userId}/boards/{boardId}/cards/{cardId}` - Update card
+- `PUT /api/users/{userId}/boards/{boardId}/cards/{cardId}/move` - Move card
+
+---
+
+## Database Structure
+
+### Core Entities
+
+**User**
+- Id (Guid)
+- Username, Email, PasswordHash
+- Audit fields (CreatedAt, CreatedBy, UpdatedAt, UpdatedBy)
+
+**Board**
+- Id (Guid), Name, Description
+- Audit fields
+
+**BoardUser** (Access Control)
+- UserId, BoardId
+- Many-to-many relationship
+
+**BoardColumn**
+- Id (Guid), BoardId, Name, Order
+- Represents columns like "TO-DO", "DOING", "DONE"
+
+**Card**
+- Id (Guid), BoardColumnId, Description, Order
+- AssignedUserId (nullable)
+- Audit fields
+
+### Relationships
+- User ↔ Board (Many-to-Many via BoardUser)
+- Board → BoardColumn (One-to-Many)
+- BoardColumn → Card (One-to-Many)
+- Card → User (Many-to-One for assignment)
+
+---
+
+## Authentication
+
+### JWT Token Flow
+
+1. **Login**: User sends credentials to `/api/auth/login`
+2. **Validation**: Server validates username/password with BCrypt
+3. **Token Generation**: Server generates JWT with claims (user ID, username, email)
+4. **Client Storage**: Client stores token (localStorage/sessionStorage)
+5. **API Requests**: Client includes token in `Authorization: Bearer <token>` header
+6. **Validation**: Server validates token signature and expiration
+
+### Token Configuration
+```json
+{
+  "JwtSettings": {
+    "SecretKey": "SecureKeyHere",
+    "Issuer": "LemonTaskManagement.Api",
+    "Audience": "LemonTaskManagement.Client",
+    "ExpirationHours": "24"
+  }
+}
 ```
 
-**Warning**: Only remove migrations that have not been applied to any database.
+### Security Features
+- BCrypt password hashing (cost factor: 11)
+- JWT with HS256 algorithm
+- Token expiration (24 hours default)
+- Board-level access control
+- Protected endpoints with `[Authorize]` attribute
 
-### Viewing Migration History
+---
 
-```bash
-cd LemonTaskManagement.Api
+## Trade-offs & Assumptions
 
-# List all migrations
-dotnet ef migrations list --project ../LemonTaskManagement.Infra.Data.Write --startup-project .
+### Trade-offs
 
-# View SQL for a specific migration
-dotnet ef migrations script --project ../LemonTaskManagement.Infra.Data.Write --startup-project .
+**1. In-Memory Database**
+- **Pros**: Zero setup, fast development, easy testing
+- **Cons**: Data loss on restart, not suitable for production
+- **Mitigation**: Easy switch to PostgreSQL via configuration
+
+**2. CQRS Pattern**
+- **Pros**: Optimized read/write operations, scalable
+- **Cons**: Added complexity, more code
+- **Justification**: Demonstrates enterprise-level architecture
+
+**3. JWT Authentication**
+- **Pros**: Stateless, scalable, works across distributed systems
+- **Cons**: Cannot revoke tokens before expiration, larger payload
+- **Mitigation**: Short expiration times, future refresh token implementation
+
+**4. Repository Pattern**
+- **Pros**: Testable, abstracts EF Core, maintainable
+- **Cons**: Additional abstraction layer
+- **Justification**: Better for long-term maintainability
+
+### Assumptions
+
+1. **Single Tenant**: System assumes single organization (no multi-tenancy)
+2. **Board Access**: Users must be explicitly added to boards to access them
+3. **Card Movement**: Cards can only be moved within the same board
+4. **User Roles**: No complex role system (all authenticated users have same permissions)
+5. **English Only**: No internationalization/localization
+6. **Timezone**: All timestamps in UTC (DateTimeOffset used throughout)
+
+---
+
+## Future Improvements & Scalability
+
+### Short-term Improvements (Next Sprint)
+
+1. **Refresh Tokens**
+   - Implement refresh token mechanism
+   - Allow token renewal without re-login
+   - Add token revocation support
+
+2. **Delete Operations**
+   - Soft delete for cards and boards
+   - Delete board endpoints
+   - Delete card endpoints
+
+3. **Advanced Search & Filtering**
+   - Search cards by description
+   - Filter by assigned user
+   - Filter by date range
+
+4. **Notifications**
+   - Real-time notifications (SignalR)
+   - Email notifications for card assignments
+   - Webhook support for integrations
+
+5. **Card Comments & Attachments**
+   - Add comments to cards
+   - File attachments
+   - Activity log per card
+
+### Medium-term Improvements (2-3 Sprints)
+
+1. **Role-Based Access Control (RBAC)**
+   - Board owner, admin, member roles
+   - Granular permissions per role
+   - Permission validation middleware
+
+2. **Real-time Collaboration**
+   - SignalR for live updates
+   - Optimistic concurrency handling
+   - Conflict resolution
+
+3. **Performance Optimization**
+   - Redis caching for frequently accessed data
+   - Query optimization with indexes
+   - Pagination for large datasets
+   - Background jobs for heavy operations
+
+4. **Enhanced Security**
+   - Rate limiting on authentication
+   - Account lockout after failed attempts
+   - Password reset functionality
+   - Two-factor authentication (2FA)
+
+### Scalability Considerations
+
+**Horizontal Scaling**
+```
+Load Balancer
+    │
+    ├─► API Instance 1 ──┐
+    ├─► API Instance 2 ──┼─► PostgreSQL (Primary)
+    └─► API Instance 3 ──┘       │
+                                 └─► Read Replicas
 ```
 
-### Migration Best Practices
+**Implementation Plan:**
+1. **Database**: 
+   - PostgreSQL with read replicas
+   - Connection pooling
+   - Write to primary, read from replicas
 
-1. **Always review generated migrations** before applying them
-2. **Test migrations** in a development environment first
-3. **Backup your database** before applying migrations in production
-4. **Use descriptive names** that indicate what the migration does
-5. **Keep migrations small** and focused on a single change
-6. **Never modify** migrations that have been applied to production
-7. **Version control** all migration files
+2. **Caching Layer**:
+   - Redis for session management
+   - Cache board and user data
+   - Invalidation strategy
 
-## Project Configuration
+3. **Message Queue**:
+   - RabbitMQ/Azure Service Bus for async operations
+   - Email notifications
+   - Background processing
 
-### Environment Variables
+4. **Monitoring & Observability**:
+   - Application Insights / ELK Stack
+   - Performance metrics
+   - Error tracking
+   - Distributed tracing
 
-The application can be configured using environment variables:
+### Long-term Vision (6+ Months)
 
-```bash
-# Database Configuration
-Database__UseInMemory=false
-ConnectionStrings__DefaultConnection="Host=localhost;Port=5432;Database=LemonTaskManagement;Username=postgres;Password=yourpassword"
+1. **Microservices Architecture**
+   - Auth Service (User management, authentication)
+   - Board Service (Board operations)
+   - Notification Service (Email, push notifications)
+   - API Gateway (Rate limiting, routing)
 
-# ASP.NET Core Configuration
-ASPNETCORE_ENVIRONMENT=Development
-ASPNETCORE_HTTP_PORTS=5130
-ASPNETCORE_HTTPS_PORTS=5131
-```
+2. **Multi-tenancy**
+   - Organization-level isolation
+   - Separate databases per tenant
+   - Tenant-specific configuration
 
-### User Secrets (Development)
+3. **Advanced Features**
+   - Card templates
+   - Recurring cards
+   - Time tracking
+   - Reports and analytics
+   - Export functionality (PDF, Excel)
+   - Integration with third-party tools (Slack, Teams)
 
-For local development, use user secrets to store sensitive information:
+4. **Mobile Apps**
+   - Native iOS/Android apps
+   - Offline support
+   - Push notifications
 
-```bash
-cd LemonTaskManagement.Api
+---
 
-# Set connection string
-dotnet user-secrets set "ConnectionStrings:DefaultConnection" "Host=localhost;Port=5432;Database=LemonTaskManagement;Username=postgres;Password=yourpassword"
-```
+## Notes & Explanation
 
-## Development Guidelines
+### Why Clean Architecture?
+- **Testability**: Business logic isolated from infrastructure
+- **Maintainability**: Clear separation of concerns
+- **Flexibility**: Easy to swap implementations (database, authentication)
+- **Scalability**: Each layer can be optimized independently
 
-### Adding New Entities
+### Why CQRS?
+- **Performance**: Separate read/write optimization
+- **Scalability**: Read and write databases can scale independently
+- **Complexity Management**: Queries don't affect command logic
+- **Future-proof**: Easy to add event sourcing later
 
-1. Create the entity in `LemonTaskManagement.Domain.Entities`
-2. Add entity configuration in `LemonTaskManagement.Infra.Data/Configurations`
-3. Update `ILemonTaskManagementDbContext` interface
-4. Update `LemonTaskManagementBaseDbContext` with DbSet
-5. Create and apply migration
+### Why Repository Pattern?
+- **Abstraction**: Hide EF Core implementation details
+- **Testing**: Easy to mock data access
+- **Flexibility**: Can swap ORM without changing business logic
 
-### Implementing Queries (Read Operations)
+### Why JWT?
+- **Stateless**: No server-side session storage needed
+- **Scalable**: Works across multiple API instances
+- **Standard**: Industry-standard authentication mechanism
+- **Cross-platform**: Works with any client (web, mobile, desktop)
 
-1. Create query model in `LemonTaskManagement.Domain.Queries/Queries`
-2. Create DTO in `LemonTaskManagement.Domain.Queries/DTOs`
-3. Define repository interface in `LemonTaskManagement.Domain.Queries/Interfaces/Repositories`
-4. Implement repository in `LemonTaskManagement.Infra.Data.Read`
-5. Create query service in `LemonTaskManagement.Domain.Queries/QueryServices`
-6. Register dependencies in `InjectorConfiguration`
-7. Create controller endpoint in `LemonTaskManagement.Api/Controllers`
+---
 
-### Implementing Commands (Write Operations)
+## Contributing
 
-1. Create command model in `LemonTaskManagement.Domain.Commands/Commands`
-2. Create command DTO if needed
-3. Define repository interface in `LemonTaskManagement.Domain.Commands/Interfaces`
-4. Implement repository using write context
-5. Create command handler
-6. Register dependencies in `InjectorConfiguration`
-7. Create controller endpoint
-
-### Code Organization Principles
-
-- **Queries**: Should never modify data; use AsNoTracking() for performance
-- **Commands**: Should handle all business validation and rules
-- **DTOs**: Transform domain entities to API-friendly formats
-- **Entities**: Keep them clean and focused on business logic
-- **Configurations**: Use Fluent API for all entity configurations
+This is a demo project for assessment purposes. For production use, consider implementing the future improvements mentioned above.
 
 ## License
 
 This project is licensed under the MIT License.
 
-## Support
+## Author
 
-For issues, questions, or contributions, please visit the [GitHub repository](https://github.com/paulo-rosa/LemonTaskManagement.Api).
+Paulo Rosa - [GitHub](https://github.com/paulo-rosa)
+
+---
+
+## Related Projects
+
+**Frontend Repository**: [Coming Soon]
+
+This backend is designed to work seamlessly with a React/Vue frontend application using the same authentication and API contracts.
