@@ -147,34 +147,88 @@ LemonTaskManagement.Api/
 ## Quick Start
 
 ### Prerequisites
-- [.NET 9 SDK](https://dotnet.microsoft.com/download/dotnet/9.0)
+- [.NET 9 SDK](https://dotnet.microsoft.com/download/dotnet/9.0) (for local development)
+- [Docker Desktop](https://www.docker.com/products/docker-desktop) (for Docker Compose)
 - (Optional) [PostgreSQL 14+](https://www.postgresql.org/download/) for production
 
-### Setup Steps
+### Running the Application
 
-1. **Clone the repository**
+You can run the application in two ways:
+
+#### Option 1: Using Docker Compose
+
+1. **Ensure Docker Desktop is running**
+
+2. **Start the application:**
+```bash
+docker-compose up --build
+```
+
+3. **Access the API:**
+- API Base: `http://localhost:5130`
+
+4. **Stop the application:**
+```bash
+docker-compose down
+```
+
+---
+
+#### Option 2: Using .NET CLI (Local Development)
+
+1. **Clone the repository** (if not already done)
 ```bash
 git clone https://github.com/paulo-rosa/LemonTaskManagement.Api.git
 cd LemonTaskManagement.Api
 ```
 
-2. **Run the application**
+2. **Restore dependencies:**
+```bash
+dotnet restore
+```
+
+3. **Run the application:**
+```bash
+dotnet run --project LemonTaskManagement.Api --launch-profile http
+```
+
+Or simply:
 ```bash
 dotnet run --project LemonTaskManagement.Api
 ```
 
-3. **Access the API**
-- Swagger UI: `https://localhost:5131/swagger`
-- API Base: `https://localhost:5131`
+4. **Access the API:**
+- API Base: `http://localhost:5130`
 
-4. **Test Authentication**
-   - Open Swagger UI
-   - Use `/api/auth/login` with credentials:
-     - Username: `admin`
-     - Password: `Admin123!`
-   - Copy the token from response
-   - Click "Authorize" button, paste token
-   - Test protected endpoints
+5. **Stop the application:**
+- Press `Ctrl+C` in the terminal
+
+**Using Visual Studio:**
+1. Open `LemonTaskManagement.Api.sln`
+2. Select the **`http`** profile from the debug dropdown
+3. Press `F5` or click "Start Debugging"
+
+---
+
+### Testing Authentication
+
+Both running methods use the same configuration. You can test the API using curl or any HTTP client:
+
+**Get Authentication Token:**
+```bash
+curl -X POST http://localhost:5130/api/auth/login \
+  -H "Content-Type: application/json" \
+  -d '{
+    "username": "admin",
+    "password": "Admin123!"
+  }'
+```
+
+**Use Token in Requests:**
+```bash
+curl -X GET http://localhost:5130/api/users \
+  -H "Authorization: Bearer <your-token-here>"
+```
 
 ### Default Test Users
 
@@ -186,7 +240,7 @@ dotnet run --project LemonTaskManagement.Api
 
 ### Database Configuration
 
-**Development (In-Memory)**
+**Development (In-Memory)** - Default for both methods
 ```json
 {
   "Database": {
@@ -194,6 +248,9 @@ dotnet run --project LemonTaskManagement.Api
   }
 }
 ```
+- Data resets on application restart
+- No database installation required
+- Fast for development and testing
 
 **Production (PostgreSQL)**
 ```json

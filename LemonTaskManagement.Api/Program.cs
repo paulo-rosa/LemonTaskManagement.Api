@@ -40,8 +40,10 @@ public class Program
             app.MapOpenApi();
             app.UseOpenApi();
         }
-
-        app.UseHttpsRedirection();
+        else
+        {
+            app.UseHttpsRedirection();
+        }
 
         app.UseCorsConfiguration(app.Environment);
 
